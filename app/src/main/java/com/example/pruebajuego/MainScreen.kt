@@ -55,6 +55,7 @@ fun MainScreen(){
     var CatidadSumar by remember { mutableStateOf(0) }
     var PrecioBabyPop by remember { mutableStateOf(20) }
     var PrecioSumClick by remember { mutableStateOf(30) }
+    var PrecioMediumPop by remember { mutableStateOf(1000) }
     var CacasClick by remember { mutableStateOf(1) }
 
 
@@ -101,7 +102,16 @@ fun MainScreen(){
             Box(Modifier.fillMaxWidth().fillMaxHeight(0.1f), contentAlignment = Alignment.BottomCenter){
 
 
-                Text("Pops: $CacasTotales", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Bottom) {
+
+
+                    Text("Pops: $CacasTotales", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                    Spacer(Modifier.height(5.dp))
+                    Text("$CatidadSumar/s", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+
+                }
+
+
             }
 
 
@@ -190,22 +200,22 @@ fun MainScreen(){
 
                             Box {
                                 Column {
-                                    Text("+1 por click", fontWeight = FontWeight.Bold, color = Color.White)
+                                    Text("Medium Pop", fontWeight = FontWeight.Bold, color = Color.White)
 
                                     Button(
                                         onClick = {
-                                            if (CacasTotales >= PrecioSumClick) {
-                                                CacasTotales -= PrecioSumClick
+                                            if (CacasTotales >= PrecioMediumPop) {
+                                                CacasTotales -= PrecioMediumPop
                                                 mostrarClickUpgrade3 = true
-                                                PrecioSumClick = (PrecioSumClick * 1.5).toInt()
-                                                CacasClick += 1
+                                                PrecioMediumPop = (PrecioMediumPop * 1.3).toInt()
+                                                CatidadSumar += 10
                                             }
                                         },
                                         shape = RoundedCornerShape(5.dp),
                                         border = BorderStroke(2.dp, Color.Black),
                                         colors = ButtonDefaults.buttonColors(containerColor = marron)
                                     ) {
-                                        Text("1/s Cost: $PrecioSumClick", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                                        Text("10/s Cost: $PrecioMediumPop", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                                     }
                                 }
                             }
@@ -218,7 +228,7 @@ fun MainScreen(){
 
                             Box {
                                 Column {
-                                    Text("+1 por click", fontWeight = FontWeight.Bold, color = Color.White)
+                                    Text("Big Pop", fontWeight = FontWeight.Bold, color = Color.White)
 
                                     Button(
                                         onClick = {
