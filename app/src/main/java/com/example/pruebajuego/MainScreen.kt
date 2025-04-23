@@ -4,8 +4,11 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Indication
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -36,10 +39,13 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.pruebajuego.ui.theme.NegroTrans
+import com.example.pruebajuego.ui.theme.PopsFont
 import com.example.pruebajuego.ui.theme.marron
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -53,8 +59,18 @@ fun MainScreen(){
     var CacasTotales by remember { mutableStateOf(0) }
     var autoSumar by remember { mutableStateOf(false) }
     var CatidadSumar by remember { mutableStateOf(0) }
+    var CantidadTotalCacas by remember { mutableStateOf(0) }
+
+
+
+
+
     var PrecioBabyPop by remember { mutableStateOf(20) }
     var PrecioSumClick by remember { mutableStateOf(30) }
+    var PrecioBigPop by remember { mutableStateOf(1000) }
+
+
+
     var CacasClick by remember { mutableStateOf(1) }
 
 
@@ -81,6 +97,13 @@ fun MainScreen(){
     )
 
 
+    if (CantidadTotalCacas < CacasTotales){
+
+        CantidadTotalCacas = CacasTotales
+
+    }
+
+
     LaunchedEffect(autoSumar) {
         while (autoSumar) {
             delay(1000L)
@@ -90,7 +113,7 @@ fun MainScreen(){
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
-            painter = painterResource(id = R.drawable.picture), // Reemplaza con tu imagen
+            painter = painterResource(id = R.drawable.fondo), // Reemplaza con tu imagen
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
@@ -101,23 +124,33 @@ fun MainScreen(){
             Box(Modifier.fillMaxWidth().fillMaxHeight(0.1f), contentAlignment = Alignment.BottomCenter){
 
 
-                Text("Pops: $CacasTotales", fontWeight = FontWeight.Bold, fontSize = 20.sp)
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+                    Text("Pops: $CacasTotales", fontFamily = PopsFont , fontSize = 30.sp, letterSpacing = 3.sp)
+                    Text("$CatidadSumar /s",fontFamily = PopsFont, fontSize = 18.sp)
+
+                }
+
             }
 
 
-            Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
-                Image(
-                    painter = painterResource(id = R.drawable.caca),
+
+                Box(modifier = Modifier.weight(1f).padding(20.dp), contentAlignment = Alignment.Center){
+
+                    Image(
+                    painter = if (CantidadTotalCacas <= 1e3){ painterResource(id = R.drawable.caca1removebg)} else if (CantidadTotalCacas <= 1e4) {painterResource(id = R.drawable.caca2rmbc)} else if (CantidadTotalCacas <= 100000) {painterResource(id = R.drawable.caca3removebg)} else if (CantidadTotalCacas <= 1e6){painterResource(id = R.drawable.caca4removebg)} else if(CantidadTotalCacas <= 5e6) {painterResource(id = R.drawable.caca5removebg)} else if (CantidadTotalCacas <= 1e7){painterResource(id = R.drawable.caca6removebg)} else if (CantidadTotalCacas <= 1e8){painterResource(id = R.drawable.caca7removebg)} else {painterResource(id = R.drawable.caca8removebg)},
                     contentDescription = null,
                     contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .weight(1f)
+                    modifier = Modifier.fillMaxSize()
                         .graphicsLayer(
                             scaleX = scale,
                             scaleY = scale
                         )
-                        .clickable {
+                        .clickable(interactionSource = null,
+                            indication = null) {
+
                             isPressed = true
                             CacasTotales += CacasClick
                             // Volver al tamaño normal después de un pequeño delay
@@ -126,7 +159,9 @@ fun MainScreen(){
                                 isPressed = false
                             }
                         }
-                )
+                )}
+
+
 
                 Card(modifier = Modifier.weight(1f).fillMaxHeight(0.7f)) {
 
@@ -190,22 +225,22 @@ fun MainScreen(){
 
                             Box {
                                 Column {
-                                    Text("+1 por click", fontWeight = FontWeight.Bold, color = Color.White)
+                                    Text("+Big pop", fontWeight = FontWeight.Bold, color = Color.White)
 
                                     Button(
                                         onClick = {
-                                            if (CacasTotales >= PrecioSumClick) {
-                                                CacasTotales -= PrecioSumClick
+                                            if (CacasTotales >= PrecioBigPop) {
+                                                CacasTotales -= PrecioBigPop
                                                 mostrarClickUpgrade3 = true
-                                                PrecioSumClick = (PrecioSumClick * 1.5).toInt()
-                                                CacasClick += 1
+                                                PrecioBigPop = (PrecioBigPop * 1.5).toInt()
+                                                CatidadSumar += 10
                                             }
                                         },
                                         shape = RoundedCornerShape(5.dp),
                                         border = BorderStroke(2.dp, Color.Black),
                                         colors = ButtonDefaults.buttonColors(containerColor = marron)
                                     ) {
-                                        Text("1/s Cost: $PrecioSumClick", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                                        Text("10/s Cost: $PrecioBigPop", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                                     }
                                 }
                             }
