@@ -68,6 +68,8 @@ fun MainScreen(){
     var PrecioBabyPop by remember { mutableStateOf(20) }
     var PrecioSumClick by remember { mutableStateOf(30) }
     var PrecioBigPop by remember { mutableStateOf(1000) }
+    var PrecioSumClick2 by remember { mutableStateOf(5000) }
+
 
 
 
@@ -180,7 +182,7 @@ fun MainScreen(){
                                         autoSumar = true
                                         CatidadSumar += 1
                                         mostrarClickUpgrade = true
-                                        PrecioBabyPop = (PrecioBabyPop * 1.2).toInt()
+                                        PrecioBabyPop = (PrecioBabyPop * 1.15).toInt()
                                     }
                                 }, shape = RoundedCornerShape(5.dp), border = BorderStroke(2.dp, Color.Black), colors = ButtonDefaults.buttonColors(containerColor = marron)) {
                                     Text("1/s Cost: $PrecioBabyPop", fontWeight = FontWeight.Bold, fontSize = 18.sp)
@@ -253,15 +255,15 @@ fun MainScreen(){
 
                             Box {
                                 Column {
-                                    Text("+1 por click", fontWeight = FontWeight.Bold, color = Color.White)
+                                    Text(" Pop click", fontWeight = FontWeight.Bold, color = Color.White)
 
                                     Button(
                                         onClick = {
-                                            if (CacasTotales >= PrecioSumClick) {
-                                                CacasTotales -= PrecioSumClick
+                                            if (CacasTotales >= PrecioSumClick2) {
+                                                CacasTotales -= PrecioSumClick2
                                                 mostrarClickUpgrade4 = true
-                                                PrecioSumClick = (PrecioSumClick * 1.5).toInt()
-                                                CacasClick += 1
+                                                PrecioSumClick2 = (PrecioSumClick2 * 1.5).toInt()
+                                                CacasClick += 3
                                             }
                                         },
                                         shape = RoundedCornerShape(5.dp),
