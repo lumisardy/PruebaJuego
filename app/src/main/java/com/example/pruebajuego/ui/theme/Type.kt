@@ -15,6 +15,14 @@ val PopsFont = FontFamily(
 
 
 )
+
+val RetroFont = FontFamily(
+
+    Font(R.font.retroregular, FontWeight.Normal)
+
+)
+
+
 // Set of Material typography styles to start with
 val Typography = Typography(
     bodyLarge = TextStyle(
