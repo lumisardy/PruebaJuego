@@ -52,7 +52,7 @@ dependencies {
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
 
-
+    implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 

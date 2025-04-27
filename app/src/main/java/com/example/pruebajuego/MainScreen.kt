@@ -3,7 +3,10 @@ package com.example.pruebajuego
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.widget.Space
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -37,9 +40,11 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +60,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pruebajuego.OptimizacionesComposables.CacaImage
+import com.example.pruebajuego.OptimizacionesComposables.PoopViewModel
 import com.example.pruebajuego.ui.theme.NegroTrans
 import com.example.pruebajuego.ui.theme.PopsFont
 import com.example.pruebajuego.ui.theme.RetroFont
@@ -69,56 +77,48 @@ fun MainScreen(){
 
 
     val context = LocalContext.current
+    val poopViewModel: PoopViewModel = remember { PoopViewModel(context) }
     val soundManager = remember { SoundManager(context) }
 
-    var CacasTotales by remember { mutableStateOf(0f) }
-    var autoSumar by remember { mutableStateOf(false) }
-    var CatidadSumar by remember { mutableStateOf(0f) }
-    var CantidadTotalCacas by remember { mutableStateOf(0) }
+    // Observamos los valores de StateFlow usando collectAsState()
+    val poopData = poopViewModel.poopData.collectAsState()
+
+    val CacasTotales = poopData.value.cacasTotales
+    val CatidadSumar = poopData.value.cantidadSumar
+    val CantidadTotalCacas = poopData.value.cantidadCacaTotales
+
+    val PrecioYourBath = poopData.value.precioYourBath
+    val PrecioSumClick = poopData.value.precioSumClick
+    val PrecioInodoros = poopData.value.precioInodoros
+    val PrecioPopCLiker = poopData.value.precioPopClicker
+    val PrecioPublicBath = poopData.value.precioPublicBath
+    val PrecioVertedero = poopData.value.precioVertedero
+    val PrecioAnimals = poopData.value.precioAnimals
+    val PrecioPopCLiker2 = poopData.value.precioPopClicker2
+    val PrecioBestPopCLiker = poopData.value.precioBestPopClicker
+
+    val mostrarClickUpgrade = poopData.value.mostrarClickUpgrade
+    val mostrarClickUpgrade2 = poopData.value.mostrarClickUpgrade2
+    val mostrarClickUpgrade3 = poopData.value.mostrarClickUpgrade3
+    val mostrarClickUpgrade4 = poopData.value.mostrarClickUpgrade4
+    val mostrarClickUpgrade5 = poopData.value.mostrarClickUpgrade5
+    val mostrarClickUpgrade6 = poopData.value.mostrarClickUpgrade6
+    val mostrarClickUpgrade7 = poopData.value.mostrarClickUpgrade7
+    val mostrarClickUpgrade8 = poopData.value.mostrarClickUpgrade8
 
 
 
 
 
-    var PrecioYourBath by remember { mutableStateOf(20) }
-    var PrecioSumClick by remember { mutableStateOf(30) }
-    var PrecioInodoros by remember { mutableStateOf(1000) }
-    var PrecioPopCLiker by remember { mutableStateOf(5000) }
-    var PrecioPublicBath by remember { mutableStateOf(20000) }
-    var PrecioVertedero by remember { mutableStateOf(100000) }
-    var PrecioPopCLiker2 by remember { mutableStateOf(500000) }
-    var PrecioAnimals by remember { mutableStateOf(2000000) }
-    var PrecioBestPopCLiker by remember { mutableStateOf(5000000) }
 
 
 
-
-    var CacasClick by remember { mutableStateOf(1) }
-
-
-
-    var mostrarClickUpgrade by remember { mutableStateOf(false) }
-    var mostrarClickUpgrade2 by remember { mutableStateOf(false) }
-    var mostrarClickUpgrade3 by remember { mutableStateOf(false) }
-    var mostrarClickUpgrade4 by remember { mutableStateOf(false) }
-    var mostrarClickUpgrade5 by remember { mutableStateOf(false) }
-    var mostrarClickUpgrade6 by remember { mutableStateOf(false) }
-    var mostrarClickUpgrade7 by remember { mutableStateOf(false) }
-    var mostrarClickUpgrade8 by remember { mutableStateOf(false) }
-
-
-
-
-    var isPressed by remember { mutableStateOf(false) }
     var isPressedTop by remember { mutableStateOf(false) }
     var isPressedBottom by remember { mutableStateOf(false) }
 
     // Animamos el valor de escala
-    val scale by animateFloatAsState(
-        targetValue = if (isPressedTop) 0.85f else 1f,
-        animationSpec = tween(durationMillis = 100),
-        label = "scaleTopAnim"
-    )
+    val scaleAnim = remember { Animatable(1f) }
+    val coroutineScope = rememberCoroutineScope()
 
     val scale2 by animateFloatAsState(
         targetValue = if (isPressedBottom) 0.85f else 1f,
@@ -127,19 +127,10 @@ fun MainScreen(){
     )
 
 
-    if (CantidadTotalCacas < CacasTotales){
-
-        CantidadTotalCacas = CacasTotales.toInt()
-
-    }
+    poopViewModel.actualizarCantidadTotalCacas()
 
 
-    LaunchedEffect(autoSumar) {
-        while (autoSumar) {
-            delay(100L)
-            CacasTotales += CatidadSumar
-        }
-    }
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -151,19 +142,18 @@ fun MainScreen(){
 
 
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.Start)  {
-            Box(Modifier.fillMaxWidth().fillMaxHeight(0.1f), contentAlignment = Alignment.BottomCenter){
+            Box(Modifier.fillMaxWidth().fillMaxHeight(0.15f), contentAlignment = Alignment.TopCenter){
 
 
                 Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Start) {
 
-                    Card(Modifier.size(62.dp), colors = CardDefaults.cardColors(containerColor = Color.Transparent)){
+                    Card(Modifier.height(90.dp).width(50.dp).padding(5.dp), colors = CardDefaults.cardColors(containerColor = Color.Transparent)){
 
-                        Spacer(Modifier.height(10.dp))
+                        Spacer(Modifier.height(30.dp))
                         Image(painter = painterResource(id = R.drawable.ajustes),
-                                contentScale = ContentScale.FillBounds,
+                                contentScale = ContentScale.FillHeight,
                                 modifier = Modifier.fillMaxSize(),
                                 contentDescription = null)
-
                     }
 
 
@@ -171,18 +161,19 @@ fun MainScreen(){
 
                     Spacer(Modifier.width(30.dp))
 
-                    Box(Modifier.height(100.dp)){
+                    Box(Modifier.height(140.dp), contentAlignment = Alignment.Center){
 
                         Image(painter = painterResource(id = R.drawable.cartel),
-                            contentScale = ContentScale.FillHeight,
+                            contentScale = ContentScale.FillBounds,
                             modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(),
                             contentDescription = null)
 
 
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Column(modifier = Modifier.padding(top = 20.dp),         horizontalAlignment = Alignment.CenterHorizontally) {
 
-                            Text("Pops: ${CacasTotales.toInt()}", fontFamily = RetroFont , fontSize = 10.sp, letterSpacing = 3.sp)
-                            Text("${(CatidadSumar * 10).toInt()} /s",fontFamily = RetroFont, fontSize = 6.sp)
+                            Text("Poops: ${formatPoops(CacasTotales.toInt())}", fontFamily = RetroFont , fontSize = 16.sp, color = Color.White, letterSpacing = 3.sp)
+                            Spacer(Modifier.height(20.dp))
+                            Text("${formatPoops((CatidadSumar * 10).toInt())}/s",fontFamily = RetroFont, fontSize = 16.sp,color = Color.White)
 
                         }
                     }
@@ -206,32 +197,38 @@ fun MainScreen(){
 
 
 
-                    Image(
-                    painter = if (CantidadTotalCacas <= 1e3){ painterResource(id = R.drawable.caca1removebg)} else if (CantidadTotalCacas <= 1e4) {painterResource(id = R.drawable.caca2rmbc)} else if (CantidadTotalCacas <= 100000) {painterResource(id = R.drawable.caca3removebg)} else if (CantidadTotalCacas <= 1e6){painterResource(id = R.drawable.caca4removebg)} else if(CantidadTotalCacas <= 5e6) {painterResource(id = R.drawable.caca5removebg)} else if (CantidadTotalCacas <= 1e7){painterResource(id = R.drawable.caca6removebg)} else if (CantidadTotalCacas <= 1e8){painterResource(id = R.drawable.caca7removebg)} else {painterResource(id = R.drawable.caca8removebg)},
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize()
-                        .graphicsLayer(
-                            scaleX = scale,
-                            scaleY = scale
-                        )
-                        .clickable(interactionSource = null,
-                            indication = null) {
-                            isPressedTop = true
+                    CacaImage(
+                        cantidadTotalCacas = CantidadTotalCacas,
+                        scale = scaleAnim.value,
+                        soundManager = soundManager,
+                        onClickAction = {
                             soundManager.playPedoSound()
-                            isPressed = true
-                            CacasTotales += CacasClick
-                            // Volver al tamaño normal después de un pequeño delay
-                            CoroutineScope(Dispatchers.Main).launch {
-                                delay(100L)
-                                isPressedTop = false
+                            poopViewModel.clickCaca()
+
+                            coroutineScope.launch {
+                                scaleAnim.animateTo(
+                                    targetValue = 0.85f,
+                                    animationSpec = spring(
+                                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                                        stiffness = Spring.StiffnessMedium
+                                    )
+                                )
+                                scaleAnim.animateTo(
+                                    targetValue = 1f,
+                                    animationSpec = spring(
+                                        dampingRatio = Spring.DampingRatioLowBouncy,
+                                        stiffness = Spring.StiffnessLow
+                                    )
+                                )
                             }
                         }
-                )}
+                    )
+                }
 
 
 
-                Card(modifier = Modifier.weight(1f).fillMaxHeight(0.7f).background(Color.Transparent), shape = RectangleShape) {
+                Card(modifier = Modifier.weight(1f).fillMaxHeight(0.7f), shape = RectangleShape, colors = CardDefaults.cardColors(
+                    Color.Transparent)) {
 
 
                     Box(modifier = Modifier.fillMaxSize().background(Color.Transparent), contentAlignment = Alignment.BottomCenter) {
@@ -257,20 +254,11 @@ fun MainScreen(){
                                                     scaleX = scale2,
                                                     scaleY = scale2)
 
+
                                                  .clickable {
-                                                    if (CacasTotales >= PrecioYourBath) {
-                                                    CacasTotales -= PrecioYourBath
-                                                    autoSumar = true
-                                                        isPressedBottom = true
-                                                    CatidadSumar += 0.1f
-                                                    mostrarClickUpgrade = true
-                                                    PrecioYourBath = (PrecioYourBath * 1.15).toInt()
-                                                    mpCompra.start()
-                                                        CoroutineScope(Dispatchers.Main).launch {
-                                                            delay(100L)
-                                                            isPressedBottom = false
-                                                        }
-                                                } },
+                                                     mpCompra.start()
+                                                     poopViewModel.comprarMejoraYourBath()
+                                                },
                                                 contentScale = ContentScale.FillBounds)
 
                                         Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
@@ -279,7 +267,7 @@ fun MainScreen(){
                                             Text("Your bath", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
 
 
-                                            Text("1/s  $PrecioYourBath $", fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 18.sp)
+                                            Text("1/s  ${formatPoops(PrecioYourBath)}$", fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 18.sp)
 
 
                                         }
@@ -300,27 +288,39 @@ fun MainScreen(){
                             if (mostrarClickUpgrade) {
                                 Spacer(Modifier.height(10.dp))
 
-                                Box() {
-                                    Column {
-                                        Text("Better clicks", fontWeight = FontWeight.Bold,fontFamily = RetroFont, color = Color.White)
+                                Box(Modifier.fillMaxWidth().height(90.dp)) {
 
-                                        Button(
-                                            onClick = {
-                                                if (CacasTotales >= PrecioSumClick) {
-                                                    CacasTotales -= PrecioSumClick
-                                                    mostrarClickUpgrade2 = true
-                                                    PrecioSumClick = (PrecioSumClick * 1.15).toInt()
-                                                    CacasClick += 1
-                                                    mpCompra.start()
+
+
+                                    Image(painter = painterResource(R.drawable.marcoclick),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+                                                poopViewModel.comprarMejorClick()
+                                                mpCompra.start()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
                                                 }
-                                            },
-                                            shape = RoundedCornerShape(5.dp),
-                                            border = BorderStroke(2.dp, Color.Black),
-                                            colors = ButtonDefaults.buttonColors(containerColor = marron)
-                                        ) {
-                                            Text("+1 click: $PrecioSumClick $", fontWeight = FontWeight.Bold,fontFamily = RetroFont, fontSize = 18.sp)
-                                        }
+                                                       },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Better clicks", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+
+
+                                        Text("+1 click: ${formatPoops(PrecioSumClick)}$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+
+
                                     }
+
                                 }
                             }
 
@@ -329,28 +329,47 @@ fun MainScreen(){
                             if (mostrarClickUpgrade2) {
                                 Spacer(Modifier.height(10.dp))
 
-                                Box {
-                                    Column {
-                                        Text("Inodoros", fontWeight = FontWeight.Bold,fontFamily = RetroFont, color = Color.White)
 
-                                        Button(
-                                            onClick = {
-                                                if (CacasTotales >= PrecioInodoros) {
-                                                    CacasTotales -= PrecioInodoros
-                                                    mostrarClickUpgrade3 = true
-                                                    PrecioInodoros = (PrecioInodoros * 1.15).toInt()
-                                                    CatidadSumar += 1
-                                                    mpCompra.start()
+
+
+                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcobanos),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+
+                                                poopViewModel.comprarMejoraInodoros()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
                                                 }
-                                            },
-                                            shape = RoundedCornerShape(5.dp),
-                                            border = BorderStroke(2.dp, Color.Black),
-                                            colors = ButtonDefaults.buttonColors(containerColor = marron)
-                                        ) {
-                                            Text("10/s $PrecioInodoros $", fontWeight = FontWeight.Bold,fontFamily = RetroFont, fontSize = 18.sp)
-                                        }
+
+                                                },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Inodoros", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+
+
+                                        Text("10/s ${formatPoops(PrecioInodoros)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+
+
                                     }
+
                                 }
+
                             }
 
                             Spacer(Modifier.height(10.dp))
@@ -358,167 +377,268 @@ fun MainScreen(){
                             if (mostrarClickUpgrade3) {
                                 Spacer(Modifier.height(10.dp))
 
-                                Box {
-                                    Column {
-                                        Text("The Pop click", fontWeight = FontWeight.Bold,fontFamily = RetroFont, color = Color.White)
 
-                                        Button(
-                                            onClick = {
-                                                if (CacasTotales >= PrecioPopCLiker) {
-                                                    CacasTotales -= PrecioPopCLiker
-                                                    mostrarClickUpgrade4 = true
-                                                    PrecioPopCLiker = (PrecioPopCLiker * 1.2).toInt()
-                                                    CacasClick += 5
-                                                    mpCompra.start()
+                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraPoopClick()
+
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
                                                 }
+
                                             },
-                                            shape = RoundedCornerShape(5.dp),
-                                            border = BorderStroke(2.dp, Color.Black),
-                                            colors = ButtonDefaults.buttonColors(containerColor = marron)
-                                        ) {
-                                            Text("+5 click  $PrecioPopCLiker $", fontWeight = FontWeight.Bold,fontFamily = RetroFont, fontSize = 18.sp)
-                                        }
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("The Pop click", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+
+
+                                        Text("+5 click  ${formatPoops(PrecioPopCLiker)}$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+
+
                                     }
+
                                 }
+
                             }
 
                             Spacer(Modifier.height(10.dp))
                             if (mostrarClickUpgrade4) {
                                 Spacer(Modifier.height(10.dp))
 
-                                Box {
-                                    Column {
-                                        Text("Public Bathrooms", fontWeight = FontWeight.Bold,fontFamily = RetroFont, color = Color.White)
 
-                                        Button(
-                                            onClick = {
-                                                if (CacasTotales >= PrecioPublicBath) {
-                                                    CacasTotales -= PrecioPublicBath
-                                                    mostrarClickUpgrade5 = true
-                                                    PrecioPublicBath = (PrecioPublicBath * 1.2).toInt()
-                                                    CatidadSumar += 5
-                                                    mpCompra.start()
+                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.publicBathrooms()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
                                                 }
+
                                             },
-                                            shape = RoundedCornerShape(5.dp),
-                                            border = BorderStroke(2.dp, Color.Black),
-                                            colors = ButtonDefaults.buttonColors(containerColor = marron)
-                                        ) {
-                                            Text("50/s  $PrecioPublicBath $", fontWeight = FontWeight.Bold,fontFamily = RetroFont, fontSize = 18.sp)
-                                        }
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Public Bathrooms", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+
+
+                                        Text("50/s  ${formatPoops(PrecioPublicBath)} \$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+
+
                                     }
+
                                 }
+
+
                             }
 
                             Spacer(Modifier.height(10.dp))
                             if (mostrarClickUpgrade5) {
                                 Spacer(Modifier.height(10.dp))
 
-                                Box {
-                                    Column {
-                                        Text("Vertedero", fontWeight = FontWeight.Bold,fontFamily = RetroFont, color = Color.White)
 
-                                        Button(
-                                            onClick = {
-                                                if (CacasTotales >= PrecioVertedero) {
-                                                    CacasTotales -= PrecioVertedero
-                                                    mostrarClickUpgrade6 = true
-                                                    PrecioVertedero = (PrecioVertedero * 1.15).toInt()
-                                                    CatidadSumar += 50
-                                                    mpCompra.start()
+
+                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraVertedero()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
                                                 }
+
                                             },
-                                            shape = RoundedCornerShape(5.dp),
-                                            border = BorderStroke(2.dp, Color.Black),
-                                            colors = ButtonDefaults.buttonColors(containerColor = marron)
-                                        ) {
-                                            Text("500/s $PrecioVertedero $", fontWeight = FontWeight.Bold,fontFamily = RetroFont, fontSize = 18.sp)
-                                        }
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Vertedero", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+
+
+                                        Text("500/s ${formatPoops(PrecioVertedero)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+
+
                                     }
+
                                 }
+
+
                             }
 
                             Spacer(Modifier.height(10.dp))
                             if (mostrarClickUpgrade6) {
                                 Spacer(Modifier.height(10.dp))
 
-                                Box {
-                                    Column {
-                                        Text("THE BEST TAP POP", fontWeight = FontWeight.Bold,fontFamily = RetroFont, color = Color.White)
 
-                                        Button(
-                                            onClick = {
-                                                if (CacasTotales >= PrecioPopCLiker2) {
-                                                    CacasTotales -= PrecioPopCLiker2
-                                                    mostrarClickUpgrade7 = true
-                                                    PrecioPopCLiker2 = (PrecioPopCLiker2 * 1.15).toInt()
-                                                    CacasClick += 50
-                                                    mpCompra.start()
+                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoratheBestTapPoop()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
                                                 }
+
                                             },
-                                            shape = RoundedCornerShape(5.dp),
-                                            border = BorderStroke(2.dp, Color.Black),
-                                            colors = ButtonDefaults.buttonColors(containerColor = marron)
-                                        ) {
-                                            Text("+50 click $PrecioPopCLiker2 $", fontWeight = FontWeight.Bold,fontFamily = RetroFont, fontSize = 18.sp)
-                                        }
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Poop Cleaner", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+
+
+                                        Text("+50 click ${formatPoops(PrecioPopCLiker2)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+
+
                                     }
+
                                 }
+
                             }
 
                             Spacer(Modifier.height(10.dp))
                             if (mostrarClickUpgrade7) {
                                 Spacer(Modifier.height(10.dp))
 
-                                Box {
-                                    Column {
-                                        Text("Animals pop? yea", fontWeight = FontWeight.Bold,fontFamily = RetroFont, color = Color.White)
 
-                                        Button(
-                                            onClick = {
-                                                if (CacasTotales >= PrecioAnimals) {
-                                                    CacasTotales -= PrecioAnimals
-                                                    mostrarClickUpgrade8 = true
-                                                    PrecioAnimals = (PrecioAnimals * 1.15).toInt()
-                                                    CatidadSumar += 250
-                                                    mpCompra.start()
+                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraAnimalPoop()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
                                                 }
+
                                             },
-                                            shape = RoundedCornerShape(5.dp),
-                                            border = BorderStroke(2.dp, Color.Black),
-                                            colors = ButtonDefaults.buttonColors(containerColor = marron)
-                                        ) {
-                                            Text("2500/s $PrecioAnimals $", fontWeight = FontWeight.Bold,fontFamily = RetroFont, fontSize = 18.sp)
-                                        }
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Animals poops", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+
+
+                                        Text("2500/s ${formatPoops(PrecioAnimals)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+
+
                                     }
+
                                 }
+
                             }
 
                             Spacer(Modifier.height(10.dp))
                             if (mostrarClickUpgrade8) {
                                 Spacer(Modifier.height(10.dp))
 
-                                Box {
-                                    Column {
-                                        Text("OMG THE POP FINGER", fontWeight = FontWeight.Bold,fontFamily = RetroFont, color = Color.White)
 
-                                        Button(
-                                            onClick = {
-                                                if (CacasTotales >= PrecioBestPopCLiker) {
-                                                    CacasTotales -= PrecioBestPopCLiker
-                                                    PrecioBestPopCLiker = (PrecioBestPopCLiker * 1.15).toInt()
-                                                    CacasClick += 500
-                                                    mpCompra.start()
+                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraPoopFinger()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
                                                 }
+
                                             },
-                                            shape = RoundedCornerShape(5.dp),
-                                            border = BorderStroke(2.dp, Color.Black),
-                                            colors = ButtonDefaults.buttonColors(containerColor = marron)
-                                        ) {
-                                            Text("+500 click $PrecioBestPopCLiker $", fontWeight = FontWeight.Bold,fontFamily = RetroFont, fontSize = 18.sp)
-                                        }
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("POP FINGER", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+
+
+                                        Text("+500 click ${formatPoops(PrecioBestPopCLiker)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+
+
                                     }
+
                                 }
+
                             }
                             Spacer(Modifier.height(10.dp))
 
@@ -539,6 +659,16 @@ fun MainScreen(){
 
             }
         }
+    }
+}
+
+
+fun formatPoops(cacasTotales: Int): String {
+    return when {
+        cacasTotales >= 1_000_000_000 -> "${cacasTotales / 1_000_000_000}b"
+        cacasTotales >= 1_000_000 -> "${cacasTotales / 1_000_000}m"
+        cacasTotales >= 10_000 -> "${cacasTotales / 1_000}k"
+        else -> "$cacasTotales"
     }
 }
 
