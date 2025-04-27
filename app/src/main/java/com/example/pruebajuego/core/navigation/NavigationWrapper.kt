@@ -11,6 +11,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.pruebajuego.AudioViewModel
+import com.example.pruebajuego.ComposablesVariados.GameSettingsScreen
 import com.example.pruebajuego.EntryScreen
 import com.example.pruebajuego.MainScreen
 import com.example.pruebajuego.R
@@ -31,11 +32,16 @@ fun NavigationWrapper(){
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = Entry){
         composable<Main>{
-            MainScreen()
+            MainScreen({navController.navigate(Ajustes)})
         }
 
         composable<Entry>{
             EntryScreen({navController.navigate(Main)})
+        }
+        composable<Ajustes> {
+
+            GameSettingsScreen()
+
         }
 
 

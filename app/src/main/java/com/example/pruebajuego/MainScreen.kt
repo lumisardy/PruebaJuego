@@ -61,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pruebajuego.ComposablesVariados.GameSettingsScreen
 import com.example.pruebajuego.OptimizacionesComposables.CacaImage
 import com.example.pruebajuego.OptimizacionesComposables.PoopViewModel
 import com.example.pruebajuego.ui.theme.NegroTrans
@@ -73,7 +74,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainScreen(){
+fun MainScreen(ScreenAjuste:() -> Unit){
 
 
     val context = LocalContext.current
@@ -152,7 +153,7 @@ fun MainScreen(){
                         Spacer(Modifier.height(30.dp))
                         Image(painter = painterResource(id = R.drawable.ajustes),
                                 contentScale = ContentScale.FillHeight,
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier.fillMaxSize().clickable { ScreenAjuste( ) },
                                 contentDescription = null)
                     }
 
@@ -166,7 +167,7 @@ fun MainScreen(){
                         Image(painter = painterResource(id = R.drawable.cartel),
                             contentScale = ContentScale.FillBounds,
                             modifier = Modifier.fillMaxWidth(0.8f).fillMaxHeight(),
-                            contentDescription = null)
+                            contentDescription = null,)
 
 
                         Column(modifier = Modifier.padding(top = 20.dp),         horizontalAlignment = Alignment.CenterHorizontally) {

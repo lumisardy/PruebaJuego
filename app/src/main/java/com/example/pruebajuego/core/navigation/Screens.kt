@@ -6,3 +6,5 @@ import kotlinx.serialization.Serializable
 object Main
 @Serializable
 object Entry
+@Serializable
+object Ajustes
