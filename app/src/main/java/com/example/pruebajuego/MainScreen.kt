@@ -37,6 +37,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -60,8 +61,8 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.pruebajuego.ComposablesVariados.GameSettingsScreen
 import com.example.pruebajuego.OptimizacionesComposables.CacaImage
 import com.example.pruebajuego.OptimizacionesComposables.PoopViewModel
 import com.example.pruebajuego.ui.theme.NegroTrans
@@ -74,7 +75,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainScreen(ScreenAjuste:() -> Unit){
+fun MainScreen(){
 
 
     val context = LocalContext.current
@@ -111,6 +112,11 @@ fun MainScreen(ScreenAjuste:() -> Unit){
 
 
 
+    var showSettingsDialog by remember { mutableStateOf(false) }
+
+    // Estados para los valores de los sliders (ejemplo)
+    var musicVolume by remember { mutableStateOf(0.5f) }
+    var effectsVolume by remember { mutableStateOf(0.7f) }
 
 
 
@@ -148,13 +154,71 @@ fun MainScreen(ScreenAjuste:() -> Unit){
 
                 Row(Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Start) {
 
-                    Card(Modifier.height(90.dp).width(50.dp).padding(5.dp), colors = CardDefaults.cardColors(containerColor = Color.Transparent)){
+                    Card(Modifier.height(95.dp).width(70.dp).padding(5.dp), colors = CardDefaults.cardColors(containerColor = Color.Transparent)){
 
                         Spacer(Modifier.height(30.dp))
-                        Image(painter = painterResource(id = R.drawable.ajustes),
-                                contentScale = ContentScale.FillHeight,
-                                modifier = Modifier.fillMaxSize().clickable { ScreenAjuste( ) },
-                                contentDescription = null)
+                        Image(
+                            painter = painterResource(id = R.drawable.ajustes), // Reemplaza R.drawable.cartel con tu recurso de imagen
+                            contentScale = ContentScale.FillBounds,
+                            contentDescription = "Icono de Ajustes", // Agrega una descripción accesible
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .fillMaxHeight()
+
+                                .clickable {
+                                    showSettingsDialog = true // Abre el diálogo al hacer click
+                                }
+                        )
+
+                        // El Diálogo de Ajustes
+                        if (showSettingsDialog) {
+                            Dialog(onDismissRequest = { showSettingsDialog = false }) {
+                                Card { // Usamos Card para darle un aspecto de tarjeta al diálogo
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                            .fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                                    ) {
+                                        Text("Ajustes")
+
+                                        // Slider para la Música
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text("Música:")
+                                            Slider(
+                                                value = musicVolume,
+                                                onValueChange = { musicVolume = it },
+                                                valueRange = 0f..1f,
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            Text(
+                                                (musicVolume * 100).toInt().toString()
+                                            ) // Muestra el porcentaje
+                                        }
+
+                                        // Slider para los Efectos
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text("Efectos:")
+                                            Slider(
+                                                value = effectsVolume,
+                                                onValueChange = { effectsVolume = it },
+                                                valueRange = 0f..1f,
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            Text(
+                                                (effectsVolume * 100).toInt().toString()
+                                            ) // Muestra el porcentaje
+                                        }
+
+                                        // Botón para cerrar el diálogo
+                                        Button(onClick = { showSettingsDialog = false }) {
+                                            Text("Cerrar")
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
 
