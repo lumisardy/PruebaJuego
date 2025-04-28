@@ -173,49 +173,74 @@ fun MainScreen(){
                         // El Diálogo de Ajustes
                         if (showSettingsDialog) {
                             Dialog(onDismissRequest = { showSettingsDialog = false }) {
-                                Card { // Usamos Card para darle un aspecto de tarjeta al diálogo
-                                    Column(
-                                        modifier = Modifier
-                                            .padding(16.dp)
-                                            .fillMaxWidth(),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                                    ) {
-                                        Text("Ajustes")
+                                Card(colors = CardDefaults.cardColors(containerColor = Color.Transparent)) { // Usamos Card para darle un aspecto de tarjeta al diálogo
 
-                                        // Slider para la Música
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Text("Música:")
-                                            Slider(
-                                                value = musicVolume,
-                                                onValueChange = { musicVolume = it },
-                                                valueRange = 0f..1f,
-                                                modifier = Modifier.weight(1f)
-                                            )
-                                            Text(
-                                                (musicVolume * 100).toInt().toString()
-                                            ) // Muestra el porcentaje
+                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+
+
+                                        Image(
+                                            painter = painterResource(id = R.drawable.fondoajustes), // Reemplaza R.drawable.cartel con tu recurso de imagen
+                                            contentScale = ContentScale.FillBounds,
+                                            contentDescription = "Ajustes", // Agrega una descripción accesible
+                                            modifier = Modifier
+                                                .fillMaxHeight(0.7f)
+                                                .fillMaxWidth()
+
+                                        )
+
+
+
+
+
+                                        Column(
+                                            modifier = Modifier
+                                                .padding(16.dp)
+                                                .fillMaxWidth()
+                                                .fillMaxHeight(0.5f),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                                        ) {
+                                            Text("Ajustes", fontFamily = RetroFont, color = Color.White)
+
+                                            // Slider para la Música
+                                            Column(horizontalAlignment = Alignment.Start) {
+                                                Text("Música:",fontFamily = RetroFont, color = Color.White)
+                                                Slider(
+                                                    value = musicVolume,
+                                                    onValueChange = { musicVolume = it },
+                                                    valueRange = 0f..1f,
+                                                    modifier = Modifier.weight(1f)
+                                                )
+                                                Text(
+                                                    (musicVolume * 100).toInt().toString()
+                                                ) // Muestra el porcentaje
+                                            }
+
+                                            // Slider para los Efectos
+                                            Column(horizontalAlignment = Alignment.Start) {
+                                                Text("Efectos:",fontFamily = RetroFont, color = Color.White)
+                                                Slider(
+                                                    value = effectsVolume,
+                                                    onValueChange = { effectsVolume = it },
+                                                    valueRange = 0f..1f,
+                                                    modifier = Modifier.weight(1f)
+                                                )
+                                                Text(
+                                                    (effectsVolume * 100).toInt().toString()
+                                                ) // Muestra el porcentaje
+                                            }
+
+                                            // Botón para cerrar el diálogo
+                                            Button(onClick = { showSettingsDialog = false }) {
+                                                Text("Cerrar")
+                                            }
                                         }
 
-                                        // Slider para los Efectos
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
-                                            Text("Efectos:")
-                                            Slider(
-                                                value = effectsVolume,
-                                                onValueChange = { effectsVolume = it },
-                                                valueRange = 0f..1f,
-                                                modifier = Modifier.weight(1f)
-                                            )
-                                            Text(
-                                                (effectsVolume * 100).toInt().toString()
-                                            ) // Muestra el porcentaje
-                                        }
-
-                                        // Botón para cerrar el diálogo
-                                        Button(onClick = { showSettingsDialog = false }) {
-                                            Text("Cerrar")
-                                        }
                                     }
+
+
+
+
                                 }
                             }
                         }

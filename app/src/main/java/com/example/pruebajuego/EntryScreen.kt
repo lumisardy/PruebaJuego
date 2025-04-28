@@ -127,11 +127,11 @@ fun EntryScreen (StartGame:() -> Unit){
 
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Top) {
 
-            Image(painter = painterResource(id = R.drawable.titulo),
+            Image(painter = painterResource(id = R.drawable.titulopoopclicker),
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxHeight(0.4f)
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.8f)
                     .graphicsLayer(
                         scaleX = scale,
                         scaleY = scale,
