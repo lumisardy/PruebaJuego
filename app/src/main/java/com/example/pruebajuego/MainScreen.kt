@@ -126,6 +126,20 @@ fun MainScreen(){
     val mostrarClickUpgrade6 = poopData.value.mostrarClickUpgrade6
     val mostrarClickUpgrade7 = poopData.value.mostrarClickUpgrade7
     val mostrarClickUpgrade8 = poopData.value.mostrarClickUpgrade8
+    val mostrarClickUpgrade9 = poopData.value.mostrarClickUpgrade9
+    val mostrarClickUpgrade10 = poopData.value.mostrarClickUpgrade10
+    val mostrarClickUpgrade11 = poopData.value.mostrarClickUpgrade11
+    val mostrarClickUpgrade12 = poopData.value.mostrarClickUpgrade12
+    val mostrarClickUpgrade13 = poopData.value.mostrarClickUpgrade13
+    val mostrarClickUpgrade14 = poopData.value.mostrarClickUpgrade14
+    val mostrarClickUpgrade15 = poopData.value.mostrarClickUpgrade15
+    val mostrarClickUpgrade16 = poopData.value.mostrarClickUpgrade16
+    val mostrarClickUpgrade17 = poopData.value.mostrarClickUpgrade17
+    val mostrarClickUpgrade18 = poopData.value.mostrarClickUpgrade18
+    val mostrarClickUpgrade19 = poopData.value.mostrarClickUpgrade19
+    val mostrarClickUpgrade20 = poopData.value.mostrarClickUpgrade20
+    val mostrarClickUpgrade21 = poopData.value.mostrarClickUpgrade21
+    val mostrarClickUpgrade22 = poopData.value.mostrarClickUpgrade22
 
 
 
@@ -537,7 +551,7 @@ fun MainScreen(){
                                         Text("The Pop click", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("+5 click  ${formatPoops(PrecioPopCLiker)}$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+                                        Text("+5 click  ${formatPoops(PrecioPopCLiker.toInt())}$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
 
 
                                     }
@@ -581,7 +595,7 @@ fun MainScreen(){
                                         Text("Public Bathrooms", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("50/s  ${formatPoops(PrecioPublicBath)} \$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
+                                        Text("50/s  ${formatPoops(PrecioPublicBath.toInt())} \$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
 
 
                                     }
@@ -627,7 +641,7 @@ fun MainScreen(){
                                         Text("Vertedero", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("250/s ${formatPoops(PrecioVertedero)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
+                                        Text("250/s ${formatPoops(PrecioVertedero.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
 
 
                                     }
@@ -672,7 +686,7 @@ fun MainScreen(){
                                         Text("Poop Cleaner", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("+50 click ${formatPoops(PrecioPopCLiker2)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+                                        Text("+50 click ${formatPoops(PrecioPopCLiker2.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
 
 
                                     }
@@ -716,7 +730,7 @@ fun MainScreen(){
                                         Text("Animals poops", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("2500/s ${formatPoops(PrecioAnimals)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
+                                        Text("2500/s ${formatPoops(PrecioAnimals.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
 
 
                                     }
@@ -760,7 +774,7 @@ fun MainScreen(){
                                         Text("POP FINGER", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
 
 
-                                        Text("+500 click ${formatPoops(PrecioBestPopCLiker)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+                                        Text("+500 click ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
 
 
                                     }
@@ -769,6 +783,623 @@ fun MainScreen(){
 
                             }
                             Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade9) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraBestPooper()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("BestPooper", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+5k/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade10) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraPoopCities()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Poop Cities", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+10k/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade11) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraMultiPoops()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Multi Poops", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+50k/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade12) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraSmartPoop()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Smart Poop", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+200k/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade13) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraPoopEconomy()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Poop Economy", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+1m/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade14) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraFireFinguer()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Fire Finguer", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+10k click ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade15) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraAncientPoops()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Ancient Poops", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+50m/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade16) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraPoopEarht()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Poop Earht", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+200m/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade17) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraPoopStars()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Poop Stars?", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+1b/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade18) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraToolsClick()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Tools Click", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+100k/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade19) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraCleanPoops()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Clean Poops?", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+50b/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade20) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraAscendPoops()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Ascend Poops", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+1t/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade21) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraPoopAge()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Poop Age", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+200t/s ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
+
+                            Spacer(Modifier.height(10.dp))
+                            if (mostrarClickUpgrade22) {
+                                Spacer(Modifier.height(10.dp))
+
+
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
+
+
+
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
+                                        contentDescription = null,
+                                        modifier = Modifier.fillMaxSize()
+                                            .graphicsLayer(
+                                                scaleX = scale2,
+                                                scaleY = scale2)
+
+                                            .clickable {
+
+                                                mpCompra.start()
+                                                poopViewModel.mejoraCliker()
+                                                isPressedBottom = true
+                                                CoroutineScope(Dispatchers.Main).launch {
+                                                    delay(100L)
+                                                    isPressedBottom = false
+                                                }
+
+                                            },
+                                        contentScale = ContentScale.FillBounds)
+
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    {
+
+                                        Text("Cliker?", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
+
+
+                                        Text("+10b click ${formatPoops(PrecioBestPopCLiker.toInt())} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
+
+
+                                    }
+
+                                }
+
+                            }
 
 
 

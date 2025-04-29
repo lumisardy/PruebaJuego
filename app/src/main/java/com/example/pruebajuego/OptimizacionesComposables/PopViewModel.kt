@@ -107,7 +107,7 @@ class PoopViewModel(context: Context) : ViewModel() {
     fun clickCaca() {
         val currentState = _poopData.value
         // Actualizamos el estado copiando el PoopData actual y modificando cacasTotales
-        _poopData.value = _poopData.value.copy(cacasTotales = _poopData.value.cacasTotales + currentState.cacasClick)
+        _poopData.value = _poopData.value.copy(cacasTotales = _poopData.value.cacasTotales + currentState.cacasClick.toInt())
         guardar() // Guardamos en DataStore
     }
 
@@ -167,8 +167,8 @@ class PoopViewModel(context: Context) : ViewModel() {
         val currentState = _poopData.value
         if (currentState.cacasTotales >= currentState.precioPopClicker) {
             _poopData.value = currentState.copy(
-                cacasTotales = currentState.cacasTotales - currentState.precioPopClicker,
-                precioPopClicker = (currentState.precioPopClicker * 1.15f).toInt(),
+                cacasTotales = currentState.cacasTotales - currentState.precioPopClicker.toInt(),
+                precioPopClicker = (currentState.precioPopClicker * 1.15f),
                 cacasClick = currentState.cacasClick + 5, // Incrementa la cantidad sumada
                 mostrarClickUpgrade4 = true
 
@@ -182,8 +182,8 @@ class PoopViewModel(context: Context) : ViewModel() {
         val currentState = _poopData.value
         if (currentState.cacasTotales >= currentState.precioPublicBath) {
             val newState = currentState.copy(
-                cacasTotales = currentState.cacasTotales - currentState.precioPublicBath,
-                precioPublicBath = (currentState.precioPublicBath * 1.15f).toInt(),
+                cacasTotales = currentState.cacasTotales - currentState.precioPublicBath.toInt(),
+                precioPublicBath = (currentState.precioPublicBath * 1.15f),
                 mostrarClickUpgrade5 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 50f // <-- Esto añade la cantidad
 
@@ -198,8 +198,8 @@ class PoopViewModel(context: Context) : ViewModel() {
         val currentState = _poopData.value
         if (currentState.cacasTotales >= currentState.precioVertedero) {
             val newState = currentState.copy(
-                cacasTotales = currentState.cacasTotales - currentState.precioVertedero,
-                precioVertedero = (currentState.precioVertedero * 1.15f).toInt(),
+                cacasTotales = currentState.cacasTotales - currentState.precioVertedero.toInt(),
+                precioVertedero = (currentState.precioVertedero * 1.15f),
                 mostrarClickUpgrade6 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 25f // <-- Esto añade la cantidad
 
@@ -214,8 +214,8 @@ class PoopViewModel(context: Context) : ViewModel() {
         val currentState = _poopData.value
         if (currentState.cacasTotales >= currentState.precioPopClicker2) {
             val newState = currentState.copy(
-                cacasTotales = currentState.cacasTotales - currentState.precioPopClicker2,
-                precioPopClicker2 = (currentState.precioPopClicker2 * 1.15f).toInt(),
+                cacasTotales = currentState.cacasTotales - currentState.precioPopClicker2.toInt(),
+                precioPopClicker2 = (currentState.precioPopClicker2 * 1.15f),
                 mostrarClickUpgrade7 = true, // Marcar esta mejora como comprada
                 cacasClick = currentState.cacasClick + 50 // <-- Esto añade la cantidad
 
@@ -230,8 +230,8 @@ class PoopViewModel(context: Context) : ViewModel() {
         val currentState = _poopData.value
         if (currentState.cacasTotales >= currentState.precioAnimals) {
             val newState = currentState.copy(
-                cacasTotales = currentState.cacasTotales - currentState.precioAnimals,
-                precioAnimals = (currentState.precioAnimals * 1.15f).toInt(),
+                cacasTotales = currentState.cacasTotales - currentState.precioAnimals.toInt(),
+                precioAnimals = (currentState.precioAnimals * 1.15f),
                 mostrarClickUpgrade8 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 250f // <-- Esto añade la cantidad
 
@@ -246,8 +246,8 @@ class PoopViewModel(context: Context) : ViewModel() {
         val currentState = _poopData.value
         if (currentState.cacasTotales >= currentState.precioBestPopClicker) {
             val newState = currentState.copy(
-                cacasTotales = currentState.cacasTotales - currentState.precioBestPopClicker,
-                precioBestPopClicker = (currentState.precioBestPopClicker * 1.15f).toInt(),
+                cacasTotales = currentState.cacasTotales - currentState.precioBestPopClicker.toInt(),
+                precioBestPopClicker = (currentState.precioBestPopClicker * 1.15f),
                 mostrarClickUpgrade8 = true, // Marcar esta mejora como comprada
                 cacasClick = currentState.cacasClick + 500 // <-- Esto añade la cantidad
 
@@ -257,6 +257,237 @@ class PoopViewModel(context: Context) : ViewModel() {
             guardar()
         }
     }
+
+    fun mejoraBestPooper() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioBestPooper) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioBestPooper.toInt(),
+                precioBestPooper = (currentState.precioBestPooper * 1.15f),
+                mostrarClickUpgrade9 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 500f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+
+    fun mejoraPoopCities() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioPoopCities) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioPoopCities.toInt(),
+                precioPoopCities = (currentState.precioPoopCities * 1.15f),
+                mostrarClickUpgrade10 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 1000f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+    fun mejoraMultiPoops() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioMultiPoops) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioMultiPoops.toInt(),
+                precioMultiPoops = (currentState.precioMultiPoops * 1.15f),
+                mostrarClickUpgrade11 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 5000f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+    fun mejoraSmartPoop() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioSmartPoop) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioSmartPoop.toInt(),
+                precioSmartPoop = (currentState.precioSmartPoop * 1.15f),
+                mostrarClickUpgrade12 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 20000f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+
+    fun mejoraPoopEconomy() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioPoopEconomy) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioPoopEconomy.toInt(),
+                precioPoopEconomy = (currentState.precioPoopEconomy * 1.15f),
+                mostrarClickUpgrade13 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 100000f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+
+
+    fun mejoraFireFinguer() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioFireFinguer) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioFireFinguer.toInt(),
+                precioFireFinguer = (currentState.precioFireFinguer * 1.15f),
+                mostrarClickUpgrade14 = true, // Marcar esta mejora como comprada
+                cacasClick = currentState.cacasClick + 1e4 // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+
+    fun mejoraAncientPoops() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioAncientPoops) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioAncientPoops.toInt(),
+                precioAncientPoops = (currentState.precioAncientPoops * 1.15f),
+                mostrarClickUpgrade15 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 5000000f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+    fun mejoraPoopEarht() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioPoopEarht) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioPoopEarht.toInt(),
+                precioPoopEarht = (currentState.precioPoopEarht * 1.15f),
+                mostrarClickUpgrade16 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 20000000f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+    fun mejoraPoopStars() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioPoopStars) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioPoopStars.toInt(),
+                precioPoopStars = (currentState.precioPoopStars * 1.15f),
+                mostrarClickUpgrade17 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 100000000f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+    fun mejoraToolsClick() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioToolsClick) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioToolsClick.toInt(),
+                precioToolsClick = (currentState.precioToolsClick * 1.15f),
+                mostrarClickUpgrade18 = true, // Marcar esta mejora como comprada
+                cacasClick = currentState.cacasClick + 1e5 // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+    fun mejoraCleanPoops() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioCleanPoops) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioCleanPoops.toInt(),
+                precioCleanPoops = (currentState.precioCleanPoops * 1.15f),
+                mostrarClickUpgrade19 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 5000000000f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+    fun mejoraAscendPoops() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioAscendPoops) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioAscendPoops.toInt(),
+                precioAscendPoops = (currentState.precioAscendPoops * 1.15f),
+                mostrarClickUpgrade20 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 100000000000f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+    fun mejoraPoopAge() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioPoopAge) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioPoopAge.toInt(),
+                precioPoopAge = (currentState.precioPoopAge * 1.15f),
+                mostrarClickUpgrade21 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 20000000000000f // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+    fun mejoraCliker() {
+        val currentState = _poopData.value
+        if (currentState.cacasTotales >= currentState.precioCliker) {
+            val newState = currentState.copy(
+                cacasTotales = currentState.cacasTotales - currentState.precioCliker.toInt(),
+                precioCliker = (currentState.precioCliker * 1.15f),
+                mostrarClickUpgrade22 = true, // Marcar esta mejora como comprada
+                cacasClick = currentState.cacasClick + 1e9 // <-- Esto añade la cantidad
+
+            )
+
+            _poopData.value = newState
+            guardar()
+        }
+    }
+
+
 
 
 

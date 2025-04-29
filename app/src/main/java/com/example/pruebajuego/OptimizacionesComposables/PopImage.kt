@@ -36,6 +36,19 @@ fun CacaImage(
             cantidadTotalCacas <= 5e6 -> R.drawable.caca5removebg
             cantidadTotalCacas <= 1e7 -> R.drawable.caca6removebg
             cantidadTotalCacas <= 1e8 -> R.drawable.caca7removebg
+            cantidadTotalCacas <= 5e8 -> R.drawable.poopgamer
+            cantidadTotalCacas <= 1e9 -> R.drawable.poopninja
+            cantidadTotalCacas <= 5e9 -> R.drawable.pooprobot
+            cantidadTotalCacas <= 1e10 -> R.drawable.pooprainbow1
+            cantidadTotalCacas <= 1e11 -> R.drawable.poopsourcer
+            cantidadTotalCacas <= 5e12 -> R.drawable.poopzombie
+            cantidadTotalCacas <= 1e13 -> R.drawable.poopknight
+            cantidadTotalCacas <= 1e14 -> R.drawable.poopphantom
+            cantidadTotalCacas <= 1e15 -> R.drawable.poopcolorides
+            cantidadTotalCacas <= 1e16 -> R.drawable.pooppharaon
+            cantidadTotalCacas <= 1e17 -> R.drawable.poopcorrupted
+            cantidadTotalCacas <= 5e18 -> R.drawable.poopangel
+            cantidadTotalCacas <= 1e19 -> R.drawable.poopdemon
             else -> R.drawable.caca8removebg
         }
     }
