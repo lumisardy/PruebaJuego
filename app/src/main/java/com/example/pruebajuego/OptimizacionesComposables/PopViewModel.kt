@@ -33,17 +33,14 @@ class PoopViewModel(context: Context) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            // Cargar los datos guardados en DataStore al iniciar el ViewModel
-            // Usamos first() para obtener el último valor y no necesitamos colectar continuamente aquí
+
             val loadedData = dataStoreManager.poopDataFlow.first()
             clearDataStore()
 
-            // Si los datos de DataStore están vacíos (cacasTotales == 0f), inicializamos con valores por defecto.
-            // De lo contrario, usamos los datos cargados.
-            _poopData.value = loadedData.takeIf { it.cacasTotales != 0f || it.cantidadCacaTotales != 0 } ?: PoopData()
-            // Podrías ajustar la condición 'it.cacasTotales != 0f' si PoopData() tiene otros valores iniciales importantes
 
-            // Iniciar la suma automática después de cargar los datos iniciales
+
+            _poopData.value = loadedData.takeIf { it.cacasTotales != 0f || it.cantidadCacaTotales != 0 } ?: PoopData()
+
             startAutoSumar()
 
             // Opcional: Si necesitas observar cambios en DataStore *después* de la carga inicial
@@ -135,15 +132,18 @@ class PoopViewModel(context: Context) : ViewModel() {
     fun comprarMejorClick() {
         val currentState = _poopData.value
         if (currentState.cacasTotales >= currentState.precioSumClick) {
-            _poopData.value = currentState.copy(
+
+            val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioSumClick,
                 precioSumClick = (currentState.precioSumClick * 1.15f).toInt(),
-                cacasClick = currentState.cacasClick + 1, // Incrementa la cantidad sumada
-                mostrarClickUpgrade2 = true
-
+                cacasClick = currentState.cacasClick + 1, // Marcar esta mejora como comprada
+                mostrarClickUpgrade2 = true // <-- Esto añade la cantidad
+                ,autoSumar = true
             )
 
+            _poopData.value = newState
             guardar()
+
         }
     }
 
@@ -201,7 +201,7 @@ class PoopViewModel(context: Context) : ViewModel() {
                 cacasTotales = currentState.cacasTotales - currentState.precioVertedero,
                 precioVertedero = (currentState.precioVertedero * 1.15f).toInt(),
                 mostrarClickUpgrade6 = true, // Marcar esta mejora como comprada
-                cantidadSumar = currentState.cantidadSumar + 500f // <-- Esto añade la cantidad
+                cantidadSumar = currentState.cantidadSumar + 25f // <-- Esto añade la cantidad
 
             )
 
@@ -232,8 +232,8 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioAnimals,
                 precioAnimals = (currentState.precioAnimals * 1.15f).toInt(),
-                mostrarClickUpgrade7 = true, // Marcar esta mejora como comprada
-                cantidadSumar = currentState.cantidadSumar + 2500f // <-- Esto añade la cantidad
+                mostrarClickUpgrade8 = true, // Marcar esta mejora como comprada
+                cantidadSumar = currentState.cantidadSumar + 250f // <-- Esto añade la cantidad
 
             )
 

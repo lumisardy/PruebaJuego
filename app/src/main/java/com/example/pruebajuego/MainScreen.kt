@@ -2,6 +2,7 @@ package com.example.pruebajuego
 
 import android.media.AudioAttributes
 import android.media.MediaPlayer
+import android.media.SoundPool
 import android.widget.Space
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
@@ -40,6 +41,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -79,8 +81,22 @@ fun MainScreen(){
 
 
     val context = LocalContext.current
+
+
+
     val poopViewModel: PoopViewModel = remember { PoopViewModel(context) }
     val soundManager = remember { SoundManager(context) }
+
+    val audioViewModel: AudioViewModel = viewModel()
+
+    // *** Asegúrate de liberar los recursos del SoundManager al salir del Composable ***
+    DisposableEffect(Unit) { // Importa DisposableEffect
+        onDispose {
+            soundManager.release()
+        }
+    }
+
+    val musicVolume by audioViewModel.musicVolume.collectAsState()
 
     // Observamos los valores de StateFlow usando collectAsState()
     val poopData = poopViewModel.poopData.collectAsState()
@@ -88,6 +104,9 @@ fun MainScreen(){
     val CacasTotales = poopData.value.cacasTotales
     val CatidadSumar = poopData.value.cantidadSumar
     val CantidadTotalCacas = poopData.value.cantidadCacaTotales
+    LaunchedEffect(Unit) { // Unit significa que solo se ejecuta la primera vez
+        audioViewModel.startBackgroundMusic(context)
+    }
 
     val PrecioYourBath = poopData.value.precioYourBath
     val PrecioSumClick = poopData.value.precioSumClick
@@ -115,7 +134,7 @@ fun MainScreen(){
     var showSettingsDialog by remember { mutableStateOf(false) }
 
     // Estados para los valores de los sliders (ejemplo)
-    var musicVolume by remember { mutableStateOf(0.5f) }
+
     var effectsVolume by remember { mutableStateOf(0.7f) }
 
 
@@ -173,67 +192,86 @@ fun MainScreen(){
                         // El Diálogo de Ajustes
                         if (showSettingsDialog) {
                             Dialog(onDismissRequest = { showSettingsDialog = false }) {
-                                Card(colors = CardDefaults.cardColors(containerColor = Color.Transparent)) { // Usamos Card para darle un aspecto de tarjeta al diálogo
-
+                                Card(colors = CardDefaults.cardColors(containerColor = Color.Transparent)) {
                                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
-
-
                                         Image(
+
                                             painter = painterResource(id = R.drawable.fondoajustes), // Reemplaza R.drawable.cartel con tu recurso de imagen
+
                                             contentScale = ContentScale.FillBounds,
+
                                             contentDescription = "Ajustes", // Agrega una descripción accesible
+
                                             modifier = Modifier
+
                                                 .fillMaxHeight(0.7f)
+
                                                 .fillMaxWidth()
 
+
+
                                         )
-
-
-
-
 
                                         Column(
                                             modifier = Modifier
                                                 .padding(16.dp)
-                                                .fillMaxWidth()
-                                                .fillMaxHeight(0.5f),
+                                                .fillMaxWidth(0.65f)
+                                                .fillMaxHeight(0.6f),
                                             horizontalAlignment = Alignment.CenterHorizontally,
                                             verticalArrangement = Arrangement.spacedBy(10.dp)
                                         ) {
                                             Text("Ajustes", fontFamily = RetroFont, color = Color.White)
+                                            Spacer(Modifier.height(15.dp))
 
                                             // Slider para la Música
-                                            Column(horizontalAlignment = Alignment.Start) {
+                                            Column(horizontalAlignment = Alignment.Start, modifier = Modifier.weight(1f)) {
                                                 Text("Música:",fontFamily = RetroFont, color = Color.White)
                                                 Slider(
+                                                    // *** Usar el valor del ViewModel ***
                                                     value = musicVolume,
-                                                    onValueChange = { musicVolume = it },
+                                                    onValueChange = {
+                                                        // *** Llamar a la función del ViewModel para cambiar el volumen ***
+                                                        audioViewModel.setMusicVolume(it)
+                                                    },
                                                     valueRange = 0f..1f,
                                                     modifier = Modifier.weight(1f)
                                                 )
-                                                Text(
-                                                    (musicVolume * 100).toInt().toString()
-                                                ) // Muestra el porcentaje
                                             }
 
                                             // Slider para los Efectos
-                                            Column(horizontalAlignment = Alignment.Start) {
+                                            Column(horizontalAlignment = Alignment.Start, modifier = Modifier.weight(1f)) {
                                                 Text("Efectos:",fontFamily = RetroFont, color = Color.White)
                                                 Slider(
-                                                    value = effectsVolume,
-                                                    onValueChange = { effectsVolume = it },
+                                                    value = effectsVolume, // Usa el estado local para el slider
+                                                    onValueChange = {
+                                                        effectsVolume = it // 1. Actualiza el estado local
+                                                        // *** ¡DESCOMENTA Y ACTIVA ESTA LLAMADA! ***
+                                                        soundManager.setEffectsVolume(it) // <-- Llama a la función del SoundManager
+                                                    },
                                                     valueRange = 0f..1f,
                                                     modifier = Modifier.weight(1f)
                                                 )
-                                                Text(
-                                                    (effectsVolume * 100).toInt().toString()
-                                                ) // Muestra el porcentaje
+                                            }
+                                            
+                                            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
+
+                                                Image( painter = painterResource(id = R.drawable.marcovacio), // Reemplaza R.drawable.cartel con tu recurso de imagen
+                                                    contentScale = ContentScale.FillBounds,
+                                                    contentDescription = "Cerrar Ajustes",
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .fillMaxHeight(0.8f)
+                                                        .padding(6.dp)
+                                                        .clickable {
+                                                            showSettingsDialog = false
+                                                        })
+
+                                                Text("Cerrar", fontFamily = RetroFont, color = Color.White)
+
                                             }
 
-                                            // Botón para cerrar el diálogo
-                                            Button(onClick = { showSettingsDialog = false }) {
-                                                Text("Cerrar")
-                                            }
+
+
                                         }
 
                                     }
@@ -261,7 +299,7 @@ fun MainScreen(){
 
                         Column(modifier = Modifier.padding(top = 20.dp),         horizontalAlignment = Alignment.CenterHorizontally) {
 
-                            Text("Poops: ${formatPoops(CacasTotales.toInt())}", fontFamily = RetroFont , fontSize = 16.sp, color = Color.White, letterSpacing = 3.sp)
+                            Text("Poops:${formatPoops(CacasTotales.toInt())}", fontFamily = RetroFont , fontSize = 14.sp, color = Color.White, letterSpacing = 3.sp)
                             Spacer(Modifier.height(20.dp))
                             Text("${formatPoops((CatidadSumar * 10).toInt())}/s",fontFamily = RetroFont, fontSize = 16.sp,color = Color.White)
 
@@ -283,7 +321,7 @@ fun MainScreen(){
             Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
 
 
-                Box(modifier = Modifier.weight(1f).padding(20.dp), contentAlignment = Alignment.Center){
+                Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center){
 
 
 
@@ -317,25 +355,25 @@ fun MainScreen(){
 
 
 
-                Card(modifier = Modifier.weight(1f).fillMaxHeight(0.7f), shape = RectangleShape, colors = CardDefaults.cardColors(
+                Card(modifier = Modifier.weight(1.7f).fillMaxHeight(0.8f), shape = RectangleShape, colors = CardDefaults.cardColors(
                     Color.Transparent)) {
 
 
-                    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent), contentAlignment = Alignment.BottomCenter) {
+                    Box(modifier = Modifier.fillMaxSize().background(Color.Transparent), contentAlignment = Alignment.Center) {
 
 
-                        Image(painter = painterResource(id = R.drawable.fondorama), // Reemplaza con tu imagen
+                        Image(painter = painterResource(id = R.drawable.tronquitofondo), // Reemplaza con tu imagen
                             contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.FillBounds)
 
 
 
-                        Column(Modifier.fillMaxHeight(0.85f).fillMaxWidth().background(Color.Transparent).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.Start) {
+                        Column(Modifier.fillMaxHeight(0.7f).fillMaxWidth().padding(bottom = 30.dp).background(Color.Transparent).verticalScroll(rememberScrollState()).padding(20.dp), verticalArrangement = Arrangement.Top, horizontalAlignment = Alignment.CenterHorizontally) {
 
                             val mpCompra: MediaPlayer = MediaPlayer.create(LocalContext.current,R.raw.comprar)
 
-                            Box(Modifier.fillMaxWidth().height(90.dp)){
+                            Box(Modifier.fillMaxWidth(0.9f).height(80.dp)){
 
                                         Image(painter = painterResource(R.drawable.marcoesponja),
                                                 contentDescription = null,
@@ -346,18 +384,18 @@ fun MainScreen(){
 
 
                                                  .clickable {
-                                                     mpCompra.start()
+                                                     soundManager.playBuySound()
                                                      poopViewModel.comprarMejoraYourBath()
                                                 },
                                                 contentScale = ContentScale.FillBounds)
 
-                                        Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                        Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
                                         {
 
-                                            Text("Your bath", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+                                            Text("Your bath", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                            Text("1/s  ${formatPoops(PrecioYourBath)}$", fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 18.sp)
+                                            Text("1/s  ${formatPoops(PrecioYourBath)}$", fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
 
 
                                         }
@@ -378,7 +416,7 @@ fun MainScreen(){
                             if (mostrarClickUpgrade) {
                                 Spacer(Modifier.height(10.dp))
 
-                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
 
 
 
@@ -391,7 +429,7 @@ fun MainScreen(){
 
                                             .clickable {
                                                 poopViewModel.comprarMejorClick()
-                                                mpCompra.start()
+                                                soundManager.playBuySound()
                                                 isPressedBottom = true
                                                 CoroutineScope(Dispatchers.Main).launch {
                                                     delay(100L)
@@ -400,13 +438,13 @@ fun MainScreen(){
                                                        },
                                         contentScale = ContentScale.FillBounds)
 
-                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
                                     {
 
-                                        Text("Better clicks", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+                                        Text("Better clicks", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("+1 click: ${formatPoops(PrecioSumClick)}$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+                                        Text("+1 click: ${formatPoops(PrecioSumClick)}$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
 
 
                                     }
@@ -422,11 +460,11 @@ fun MainScreen(){
 
 
 
-                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
 
 
 
-                                    Image(painter = painterResource(R.drawable.marcobanos),
+                                    Image(painter = painterResource(R.drawable.marcowc),
                                         contentDescription = null,
                                         modifier = Modifier.fillMaxSize()
                                             .graphicsLayer(
@@ -447,13 +485,13 @@ fun MainScreen(){
                                                 },
                                         contentScale = ContentScale.FillBounds)
 
-                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
                                     {
 
-                                        Text("Inodoros", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+                                        Text("Inodoros", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("10/s ${formatPoops(PrecioInodoros)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+                                        Text("10/s ${formatPoops(PrecioInodoros)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
 
 
                                     }
@@ -468,7 +506,7 @@ fun MainScreen(){
                                 Spacer(Modifier.height(10.dp))
 
 
-                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
 
 
 
@@ -493,13 +531,13 @@ fun MainScreen(){
                                             },
                                         contentScale = ContentScale.FillBounds)
 
-                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
                                     {
 
-                                        Text("The Pop click", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+                                        Text("The Pop click", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("+5 click  ${formatPoops(PrecioPopCLiker)}$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+                                        Text("+5 click  ${formatPoops(PrecioPopCLiker)}$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
 
 
                                     }
@@ -513,11 +551,11 @@ fun MainScreen(){
                                 Spacer(Modifier.height(10.dp))
 
 
-                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
 
 
 
-                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                    Image(painter = painterResource(R.drawable.marcobanos),
                                         contentDescription = null,
                                         modifier = Modifier.fillMaxSize()
                                             .graphicsLayer(
@@ -537,13 +575,13 @@ fun MainScreen(){
                                             },
                                         contentScale = ContentScale.FillBounds)
 
-                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
                                     {
 
-                                        Text("Public Bathrooms", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+                                        Text("Public Bathrooms", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("50/s  ${formatPoops(PrecioPublicBath)} \$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+                                        Text("50/s  ${formatPoops(PrecioPublicBath)} \$",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
 
 
                                     }
@@ -559,11 +597,11 @@ fun MainScreen(){
 
 
 
-                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
 
 
 
-                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                    Image(painter = painterResource(R.drawable.marcobolsabasura),
                                         contentDescription = null,
                                         modifier = Modifier.fillMaxSize()
                                             .graphicsLayer(
@@ -583,13 +621,13 @@ fun MainScreen(){
                                             },
                                         contentScale = ContentScale.FillBounds)
 
-                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
                                     {
 
-                                        Text("Vertedero", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+                                        Text("Vertedero", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("500/s ${formatPoops(PrecioVertedero)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+                                        Text("250/s ${formatPoops(PrecioVertedero)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
 
 
                                     }
@@ -604,11 +642,11 @@ fun MainScreen(){
                                 Spacer(Modifier.height(10.dp))
 
 
-                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
 
 
 
-                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                    Image(painter = painterResource(R.drawable.escoba),
                                         contentDescription = null,
                                         modifier = Modifier.fillMaxSize()
                                             .graphicsLayer(
@@ -628,13 +666,13 @@ fun MainScreen(){
                                             },
                                         contentScale = ContentScale.FillBounds)
 
-                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
                                     {
 
-                                        Text("Poop Cleaner", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+                                        Text("Poop Cleaner", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("+50 click ${formatPoops(PrecioPopCLiker2)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+                                        Text("+50 click ${formatPoops(PrecioPopCLiker2)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
 
 
                                     }
@@ -648,11 +686,11 @@ fun MainScreen(){
                                 Spacer(Modifier.height(10.dp))
 
 
-                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
 
 
 
-                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                    Image(painter = painterResource(R.drawable.pajaro),
                                         contentDescription = null,
                                         modifier = Modifier.fillMaxSize()
                                             .graphicsLayer(
@@ -672,13 +710,13 @@ fun MainScreen(){
                                             },
                                         contentScale = ContentScale.FillBounds)
 
-                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
                                     {
 
-                                        Text("Animals poops", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+                                        Text("Animals poops", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 10.sp)
 
 
-                                        Text("2500/s ${formatPoops(PrecioAnimals)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+                                        Text("2500/s ${formatPoops(PrecioAnimals)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 12.sp)
 
 
                                     }
@@ -692,11 +730,11 @@ fun MainScreen(){
                                 Spacer(Modifier.height(10.dp))
 
 
-                                Box(Modifier.fillMaxWidth().height(90.dp)) {
+                                Box(Modifier.fillMaxWidth(0.9f).height(80.dp)) {
 
 
 
-                                    Image(painter = painterResource(R.drawable.marcoclick2),
+                                    Image(painter = painterResource(R.drawable.marcomanomoneda),
                                         contentDescription = null,
                                         modifier = Modifier.fillMaxSize()
                                             .graphicsLayer(
@@ -716,13 +754,13 @@ fun MainScreen(){
                                             },
                                         contentScale = ContentScale.FillBounds)
 
-                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 50.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
+                                    Column(Modifier.fillMaxWidth().padding(top = 20.dp, end = 20.dp), horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.Center)
                                     {
 
-                                        Text("POP FINGER", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 15.sp)
+                                        Text("POP FINGER", fontWeight = FontWeight.Bold, color = Color.White, fontFamily = RetroFont, fontSize = 12.sp)
 
 
-                                        Text("+500 click ${formatPoops(PrecioBestPopCLiker)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 14.sp)
+                                        Text("+500 click ${formatPoops(PrecioBestPopCLiker)} $",  fontWeight = FontWeight.Bold,fontFamily = RetroFont,color = Color.White, fontSize = 10.sp)
 
 
                                     }
@@ -756,7 +794,7 @@ fun MainScreen(){
 fun formatPoops(cacasTotales: Int): String {
     return when {
         cacasTotales >= 1_000_000_000 -> "${cacasTotales / 1_000_000_000}b"
-        cacasTotales >= 1_000_000 -> "${cacasTotales / 1_000_000}m"
+        cacasTotales >= 10_000_000 -> "${cacasTotales / 1_000_000}m"
         cacasTotales >= 10_000 -> "${cacasTotales / 1_000}k"
         else -> "$cacasTotales"
     }

@@ -4,11 +4,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.pruebajuego.AudioViewModel
 import com.example.pruebajuego.R
 import com.example.pruebajuego.SoundManager
 
@@ -19,6 +23,10 @@ fun CacaImage(
     soundManager: SoundManager,
     onClickAction: () -> Unit
 ) {
+
+
+
+
     val imageId = remember(cantidadTotalCacas) {
         when {
             cantidadTotalCacas <= 1e3 -> R.drawable.caca1removebg
@@ -37,7 +45,7 @@ fun CacaImage(
     Image(
         painter = painter,
         contentDescription = null,
-        contentScale = ContentScale.Crop,
+        contentScale = ContentScale.FillHeight,
         modifier = Modifier
             .fillMaxSize()
             .graphicsLayer(

@@ -8,7 +8,7 @@ espressoCore = "3.5.1"
 lifecycleRuntimeKtx = "2.6.1"
 activityCompose = "1.8.2"
 composeBom = "2024.09.00"
-navigatonCompose = "2.8.2"
+navigatonCompose = "2.8.9"
 kotlinSerialization = "1.7.3"
 datastore = "1.1.0"
 
