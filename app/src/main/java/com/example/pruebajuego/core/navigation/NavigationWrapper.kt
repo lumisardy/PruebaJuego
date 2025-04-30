@@ -119,7 +119,7 @@ fun BottomBarNav(navController: NavHostController) {
         Box(modifier = Modifier.fillMaxSize()) {
             // Imagen de fondo
             Image(
-                painter = painterResource(id = R.drawable.partedeabajo),
+                painter = painterResource(id = R.drawable.partedeabajo3),
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier
                     .fillMaxSize()

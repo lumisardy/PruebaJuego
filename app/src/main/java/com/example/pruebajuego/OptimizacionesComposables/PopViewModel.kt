@@ -25,9 +25,14 @@ class PoopViewModel(context: Context) : ViewModel() {
 
     private val dataStoreManager = DataStoreManager(context = context)
 
+
     // *** ÚNICA fuente de verdad para todo el estado ***
     private val _poopData = MutableStateFlow(PoopData())
     val poopData: StateFlow<PoopData> = _poopData.asStateFlow() // Exponemos como read-only
+
+
+    val cantidadCacasTotales = poopData.value.cantidadaAcumuladaCacas
+    var diamantesAobtener: Double = cantidadCacasTotales / 1e6
 
     // REMOVED: Todos los StateFlows individuales (_cacasTotales, _autoSumar, etc.)
 
@@ -35,7 +40,7 @@ class PoopViewModel(context: Context) : ViewModel() {
         viewModelScope.launch {
 
             val loadedData = dataStoreManager.poopDataFlow.first()
-            clearDataStore()
+            //clearDataStore()
 
 
 
@@ -66,7 +71,9 @@ class PoopViewModel(context: Context) : ViewModel() {
                 if (_poopData.value.autoSumar && _poopData.value.cantidadSumar > 0) {
                     // Actualizamos el estado en memoria (el StateFlow)
                     _poopData.value = _poopData.value.copy(
-                        cacasTotales = _poopData.value.cacasTotales + _poopData.value.cantidadSumar
+                        cacasTotales = _poopData.value.cacasTotales + _poopData.value.cantidadSumar,
+                        cantidadaAcumuladaCacas = _poopData.value.cantidadaAcumuladaCacas + _poopData.value.cantidadSumar
+
                     )
 
                     // Incrementamos el contador de ticks para el guardado
@@ -92,6 +99,73 @@ class PoopViewModel(context: Context) : ViewModel() {
         }
     }
 
+    fun hacerRebirth(){
+
+        val currentState = _poopData.value
+        val newState = currentState.copy(
+            diamantesTotales = diamantesAobtener,
+            cacasTotales = 0f,
+            precioSumClick = 30,
+            cacasClick = 1e0,
+            cantidadCacaTotales = 0,
+            cantidadSumar = 0f,
+            autoSumar = false,
+            precioYourBath = 20,
+            precioInodoros = 1000,
+            precioPopClicker = 5e3,
+            precioToolsClick = 7e14,
+            precioSmartPoop = 6e8,
+            precioPublicBath = 2e4,
+            precioPopClicker2 = 5e5,
+            precioPoopStars = 1e13,
+            precioPoopEconomy = 3e9,
+            precioPoopCities = 5e7,
+            precioMultiPoops = 1e8,
+            precioFireFinguer = 4e10,
+            precioCleanPoops = 1e16,
+            precioBestPopClicker = 5e6,
+            precioBestPooper = 1e7,
+            precioAscendPoops = 5e18,
+            precioAncientPoops = 1e11,
+            precioPoopAge = 1e20,
+            precioPoopEarht = 5e12,
+            precioVertedero = 1e5,
+            precioAnimals = 2e6,
+            precioCliker = 1e22,
+            mostrarClickUpgrade = false,
+            mostrarClickUpgrade2 = false,
+            mostrarClickUpgrade3 = false,
+            mostrarClickUpgrade4 = false,
+            mostrarClickUpgrade5 = false,
+            mostrarClickUpgrade6 = false,
+            mostrarClickUpgrade7 = false,
+            mostrarClickUpgrade8 = false,
+            mostrarClickUpgrade9 = false,
+            mostrarClickUpgrade10 = false,
+            mostrarClickUpgrade11 = false,
+            mostrarClickUpgrade12 = false,
+            mostrarClickUpgrade13 = false,
+            mostrarClickUpgrade14 = false,
+            mostrarClickUpgrade15 = false,
+            mostrarClickUpgrade16 = false,
+            mostrarClickUpgrade17 = false,
+            mostrarClickUpgrade18 = false,
+            mostrarClickUpgrade19 = false,
+            mostrarClickUpgrade20 = false,
+            mostrarClickUpgrade21 = false,
+            mostrarClickUpgrade22 = false,
+            mostrarClickUpgrade23 = false,
+            mostrarClickUpgrade24 = false,
+
+
+        )
+
+        _poopData.value = newState
+
+        guardar()
+
+    }
+
 
     // Función interna para guardar el estado actual de _poopData.value
     private fun guardar() {
@@ -108,6 +182,11 @@ class PoopViewModel(context: Context) : ViewModel() {
         val currentState = _poopData.value
         // Actualizamos el estado copiando el PoopData actual y modificando cacasTotales
         _poopData.value = _poopData.value.copy(cacasTotales = _poopData.value.cacasTotales + currentState.cacasClick.toInt())
+
+        _poopData.value = _poopData.value.copy(cantidadaAcumuladaCacas  = _poopData.value.cantidadaAcumuladaCacas + currentState.cacasClick.toInt())
+
+
+
         guardar() // Guardamos en DataStore
     }
 
@@ -185,7 +264,7 @@ class PoopViewModel(context: Context) : ViewModel() {
                 cacasTotales = currentState.cacasTotales - currentState.precioPublicBath.toInt(),
                 precioPublicBath = (currentState.precioPublicBath * 1.15f),
                 mostrarClickUpgrade5 = true, // Marcar esta mejora como comprada
-                cantidadSumar = currentState.cantidadSumar + 50f // <-- Esto añade la cantidad
+                cantidadSumar = currentState.cantidadSumar + 5f // <-- Esto añade la cantidad
 
             )
 
@@ -217,7 +296,7 @@ class PoopViewModel(context: Context) : ViewModel() {
                 cacasTotales = currentState.cacasTotales - currentState.precioPopClicker2.toInt(),
                 precioPopClicker2 = (currentState.precioPopClicker2 * 1.15f),
                 mostrarClickUpgrade7 = true, // Marcar esta mejora como comprada
-                cacasClick = currentState.cacasClick + 50 // <-- Esto añade la cantidad
+                cacasClick = currentState.cacasClick + 250 // <-- Esto añade la cantidad
 
             )
 
@@ -248,7 +327,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioBestPopClicker.toInt(),
                 precioBestPopClicker = (currentState.precioBestPopClicker * 1.15f),
-                mostrarClickUpgrade8 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade9 = true, // Marcar esta mejora como comprada
                 cacasClick = currentState.cacasClick + 500 // <-- Esto añade la cantidad
 
             )
@@ -264,7 +343,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioBestPooper.toInt(),
                 precioBestPooper = (currentState.precioBestPooper * 1.15f),
-                mostrarClickUpgrade9 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade10 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 500f // <-- Esto añade la cantidad
 
             )
@@ -281,7 +360,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioPoopCities.toInt(),
                 precioPoopCities = (currentState.precioPoopCities * 1.15f),
-                mostrarClickUpgrade10 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade11 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 1000f // <-- Esto añade la cantidad
 
             )
@@ -297,7 +376,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioMultiPoops.toInt(),
                 precioMultiPoops = (currentState.precioMultiPoops * 1.15f),
-                mostrarClickUpgrade11 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade12 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 5000f // <-- Esto añade la cantidad
 
             )
@@ -313,7 +392,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioSmartPoop.toInt(),
                 precioSmartPoop = (currentState.precioSmartPoop * 1.15f),
-                mostrarClickUpgrade12 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade13 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 20000f // <-- Esto añade la cantidad
 
             )
@@ -330,7 +409,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioPoopEconomy.toInt(),
                 precioPoopEconomy = (currentState.precioPoopEconomy * 1.15f),
-                mostrarClickUpgrade13 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade14 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 100000f // <-- Esto añade la cantidad
 
             )
@@ -348,7 +427,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioFireFinguer.toInt(),
                 precioFireFinguer = (currentState.precioFireFinguer * 1.15f),
-                mostrarClickUpgrade14 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade15 = true, // Marcar esta mejora como comprada
                 cacasClick = currentState.cacasClick + 1e4 // <-- Esto añade la cantidad
 
             )
@@ -365,7 +444,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioAncientPoops.toInt(),
                 precioAncientPoops = (currentState.precioAncientPoops * 1.15f),
-                mostrarClickUpgrade15 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade16 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 5000000f // <-- Esto añade la cantidad
 
             )
@@ -381,7 +460,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioPoopEarht.toInt(),
                 precioPoopEarht = (currentState.precioPoopEarht * 1.15f),
-                mostrarClickUpgrade16 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade17 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 20000000f // <-- Esto añade la cantidad
 
             )
@@ -397,7 +476,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioPoopStars.toInt(),
                 precioPoopStars = (currentState.precioPoopStars * 1.15f),
-                mostrarClickUpgrade17 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade18 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 100000000f // <-- Esto añade la cantidad
 
             )
@@ -413,7 +492,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioToolsClick.toInt(),
                 precioToolsClick = (currentState.precioToolsClick * 1.15f),
-                mostrarClickUpgrade18 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade19 = true, // Marcar esta mejora como comprada
                 cacasClick = currentState.cacasClick + 1e5 // <-- Esto añade la cantidad
 
             )
@@ -429,7 +508,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioCleanPoops.toInt(),
                 precioCleanPoops = (currentState.precioCleanPoops * 1.15f),
-                mostrarClickUpgrade19 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade20 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 5000000000f // <-- Esto añade la cantidad
 
             )
@@ -445,7 +524,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioAscendPoops.toInt(),
                 precioAscendPoops = (currentState.precioAscendPoops * 1.15f),
-                mostrarClickUpgrade20 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade21 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 100000000000f // <-- Esto añade la cantidad
 
             )
@@ -461,7 +540,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioPoopAge.toInt(),
                 precioPoopAge = (currentState.precioPoopAge * 1.15f),
-                mostrarClickUpgrade21 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade22 = true, // Marcar esta mejora como comprada
                 cantidadSumar = currentState.cantidadSumar + 20000000000000f // <-- Esto añade la cantidad
 
             )
@@ -477,7 +556,7 @@ class PoopViewModel(context: Context) : ViewModel() {
             val newState = currentState.copy(
                 cacasTotales = currentState.cacasTotales - currentState.precioCliker.toInt(),
                 precioCliker = (currentState.precioCliker * 1.15f),
-                mostrarClickUpgrade22 = true, // Marcar esta mejora como comprada
+                mostrarClickUpgrade23 = true, // Marcar esta mejora como comprada
                 cacasClick = currentState.cacasClick + 1e9 // <-- Esto añade la cantidad
 
             )
