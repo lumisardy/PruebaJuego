@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class PoopData(
     val cacasTotales: Float = 0f,
     val cacasClick: Double = 1e0,
-    val diamantesTotales: Double = 1e0,
+    val diamantesTotales: Double = 0e0,
     val cantidadCacaTotales: Int = 0,
     val cantidadaAcumuladaCacas: Double = 0e0,
     val cantidadSumar: Float = 0f,

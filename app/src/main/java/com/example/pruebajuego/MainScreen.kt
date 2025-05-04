@@ -329,9 +329,9 @@ fun MainScreen() {
 
 
                         Column(
-                            Modifier.fillMaxHeight(0.7f).fillMaxWidth().padding(bottom = 30.dp)
+                            Modifier.fillMaxHeight(0.7f).fillMaxWidth()
                                 .background(Color.Transparent).verticalScroll(rememberScrollState())
-                                .padding(20.dp),
+                                ,
                             verticalArrangement = Arrangement.Top,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -1796,7 +1796,7 @@ fun MainScreen() {
 
 
                 Image(
-                    painter = painterResource(id = R.drawable.botonreiniciar), // Reemplaza R.drawable.cartel con tu recurso de imagen
+                    painter = painterResource(id = R.drawable.marcopiedrarebirth), // Reemplaza R.drawable.cartel con tu recurso de imagen
                     contentScale = ContentScale.FillBounds,
                     contentDescription = "boton reiniciar", // Agrega una descripción accesible
                     modifier = Modifier
@@ -1917,9 +1917,13 @@ fun MainScreen() {
             Dialog(onDismissRequest = { showSettingsDialog2 = false }) {
                 Card(colors = CardDefaults.cardColors(containerColor = Color.Transparent)) {
                     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+
+
+
+
                         Image(
 
-                            painter = painterResource(id = R.drawable.marcopiedra2), // Reemplaza R.drawable.cartel con tu recurso de imagen
+                            painter = painterResource(id = R.drawable.marcopiedra), // Reemplaza R.drawable.cartel con tu recurso de imagen
 
                             contentScale = ContentScale.FillBounds,
 
@@ -1934,82 +1938,42 @@ fun MainScreen() {
 
                         )
 
-                        Column(
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth()
-                                .fillMaxHeight(0.6f)
-                                .padding(start = 50.dp, end = 35.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Spacer(Modifier.height(10.dp))
-                            // Slider para la Música
-                            Column(
-                                horizontalAlignment = Alignment.Start,
-                                verticalArrangement = Arrangement.Center,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                Text(
-                                    "Perderas:",
-                                    fontFamily = RetroFont,
-                                    color = Color.White,
-                                    fontSize = 16.sp
-                                )
-                                Spacer(Modifier.height(15.dp))
-                                Text(
-                                    "-Poops",
-                                    fontFamily = RetroFont,
-                                    color = Color.White,
-                                    fontSize = 10.sp
-                                )
-                                Text(
-                                    "-Mejoras  ",
-                                    fontFamily = RetroFont,
-                                    color = Color.White,
-                                    fontSize = 10.sp
-                                )
-                                Text(
-                                    "-Estadisticas ",
-                                    fontFamily = RetroFont,
-                                    color = Color.White,
-                                    fontSize = 10.sp
-                                )
+                        Box(Modifier.fillMaxSize().padding(top = 90.dp), contentAlignment = Alignment.TopEnd){
 
-                                Spacer(Modifier.height(10.dp))
-                                Text(
-                                    "Obtienes:",
-                                    fontFamily = RetroFont,
-                                    color = Color.White,
-                                    fontSize = 16.sp
-                                )
-                                Spacer(Modifier.height(10.dp))
-                                Text(
-                                    "-Diamantes",
-                                    fontFamily = RetroFont,
-                                    color = Color.White,
-                                    fontSize = 10.sp
-                                )
+                            Image(
+
+                                painter = painterResource(id = R.drawable.marcopiedrasalir), // Reemplaza R.drawable.cartel con tu recurso de imagen
+
+                                contentScale = ContentScale.FillBounds,
+
+                                contentDescription = "Salir", // Agrega una descripción accesible
+
+                                modifier = Modifier
+
+                                    .size(60.dp)
+                                    .clickable{
+                                        showSettingsDialog2 = false
+                                    }
 
 
-                            }
-
+                            )
 
                         }
 
+
                         Box(
-                            modifier = Modifier.fillMaxSize().padding(bottom = 100.dp),
+                            modifier = Modifier.fillMaxSize().padding(bottom = 120.dp),
                             contentAlignment = Alignment.BottomCenter
                         ) {
 
                             Box(contentAlignment = Alignment.Center) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.marcoboton), // Reemplaza R.drawable.cartel con tu recurso de imagen
+                                    painter = painterResource(id = R.drawable.marcopiedraboton), // Reemplaza R.drawable.cartel con tu recurso de imagen
                                     contentScale = ContentScale.FillBounds,
                                     contentDescription = "Cerrar Ajustes",
                                     modifier = Modifier
-                                        .fillMaxWidth(0.88f)
-                                        .fillMaxHeight(0.18f)
+                                        .fillMaxWidth(0.6f)
+                                        .fillMaxHeight(0.11f)
                                         .clickable {
 
 

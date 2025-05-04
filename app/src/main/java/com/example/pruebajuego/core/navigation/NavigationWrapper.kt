@@ -55,6 +55,8 @@ import com.example.pruebajuego.AudioViewModel
 import com.example.pruebajuego.EntryScreen
 import com.example.pruebajuego.MainScreen
 import com.example.pruebajuego.R
+import com.example.pruebajuego.Screens.UpgradesScreen
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun NavigationWrapper(){
@@ -74,6 +76,10 @@ fun NavigationWrapper(){
 
             composable<Entry>{
                 EntryScreen({navController.navigate(Main)})
+            }
+
+            composable<Upgrades>{
+                UpgradesScreen()
             }
 
 
@@ -113,7 +119,8 @@ fun BottomBarNav(navController: NavHostController) {
                     ),
                     topLeft = Offset(0f, -30f)
                 )
-            },
+            }
+            ,
         containerColor = Color.White
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
@@ -131,26 +138,27 @@ fun BottomBarNav(navController: NavHostController) {
             Row(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .align(Alignment.Center)  // Alineamos los íconos en el centro vertical
+                    .align(Alignment.Center)
+                    .padding(top = 25.dp)// Alineamos los íconos en el centro vertical
             ) {
                 NavigationBarItem(
                     selected = false,
-                    enabled = false,
+
                     onClick = { navController.navigate(Main) },
                     icon = {
                         Box(
                             modifier = Modifier.fillMaxHeight(),
-                            contentAlignment = Alignment.TopCenter
+                            contentAlignment = Alignment.BottomCenter
                         ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(top = 20.dp, bottom = 5.dp),
+                                    .padding(),
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Top
+                                verticalArrangement = Arrangement.Bottom
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.iconcaca),
+                                    painter = painterResource(id = R.drawable.cacaclick),
                                     contentScale = ContentScale.FillHeight,
                                     modifier = Modifier.fillMaxSize(),
                                     contentDescription = null
@@ -162,21 +170,21 @@ fun BottomBarNav(navController: NavHostController) {
 
                 NavigationBarItem(
                     selected = false,
-                    onClick = { /*TODO*/ },
+                    onClick = { navController.navigate(Upgrades) },
                     icon = {
                         Box(
-                            modifier = Modifier.fillMaxHeight(),
-                            contentAlignment = Alignment.TopCenter
+                            modifier = Modifier.fillMaxHeight(0.8f),
+                            contentAlignment = Alignment.BottomCenter
                         ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(top = 25.dp, bottom = 10.dp),
+                                    .padding(),
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Top
+                                verticalArrangement = Arrangement.Bottom
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.iconlevelup),
+                                    painter = painterResource(id = R.drawable.flechaicono),
                                     contentScale = ContentScale.FillHeight,
                                     modifier = Modifier.fillMaxSize(),
                                     contentDescription = null
@@ -194,18 +202,18 @@ fun BottomBarNav(navController: NavHostController) {
                     onClick = { /*TODO*/ },
                     icon = {
                         Box(
-                            modifier = Modifier.fillMaxHeight(),
-                            contentAlignment = Alignment.TopCenter
+                            modifier = Modifier.fillMaxHeight(0.8f),
+                            contentAlignment = Alignment.BottomCenter
                         ) {
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(top = 22.dp, bottom = 5.dp),
+                                    .padding(),
                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Top
+                                verticalArrangement = Arrangement.Bottom
                             ) {
                                 Image(
-                                    painter = painterResource(id = R.drawable.iconcofre),
+                                    painter = painterResource(id = R.drawable.rocaicon),
                                     contentScale = ContentScale.FillHeight,
                                     modifier = Modifier.fillMaxSize(),
                                     contentDescription = null
@@ -222,7 +230,25 @@ fun BottomBarNav(navController: NavHostController) {
                     selected = false,
                     onClick = { /*TODO*/ },
                     icon = {
-                        Icon(Icons.Filled.Favorite, contentDescription = null, tint = Color.Black)
+                        Box(
+                            modifier = Modifier.fillMaxHeight(0.8f),
+                            contentAlignment = Alignment.BottomCenter
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Bottom
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.dungeonicon),
+                                    contentScale = ContentScale.FillHeight,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     },
                     label = {
 
