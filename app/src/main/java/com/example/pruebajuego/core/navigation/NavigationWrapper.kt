@@ -29,6 +29,7 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.ViewModelStoreOwner
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -62,201 +67,222 @@ import com.example.pruebajuego.Screens.UpgradesScreen
 fun NavigationWrapper(){
     val navController = rememberNavController()
     var showBottomBar  by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
-    Scaffold(bottomBar =  { if (showBottomBar) {
-        BottomBarNav(navController)  // La BottomBar solo se muestra cuando showBottomBar es true
-    } }){  innerPadding ->
+    // Obtiene el ViewModelStoreOwner del propietario del ciclo de vida local (generalmente la Activity)
+    val viewModelStoreOwner = LocalLifecycleOwner.current as ViewModelStoreOwner
+    // Obtiene el LifecycleOwner para observar los eventos del ciclo de vida
+    val lifecycleOwner = LocalLifecycleOwner.current
 
 
-        NavHost(navController = navController, startDestination = Entry){
-            composable<Main>{
-                showBottomBar  = true
-                MainScreen()
+    // *** Obtén el AudioViewModel usando el owner de la Activity y la Factory ***
+    // Esto asegura que el ViewModel vive tanto como la Activity que contiene este Composable
+    val audioViewModel: AudioViewModel = viewModel(
+        viewModelStoreOwner = viewModelStoreOwner,
+        factory = AudioViewModel.Factory(context) // Usa la Factory que definimos en AudioViewModel
+    )
+
+    // *** Gestiona la reproducción de audio observando el ciclo de vida ***
+    DisposableEffect(lifecycleOwner) { // La key es lifecycleOwner para que se re-ejecute si cambia (raro, pero buena práctica)
+        Log.d("NavigationWrapper", "DisposableEffect: Inicializando observador de ciclo de vida para audio.")
+
+        // Crea un observador de eventos del ciclo de vida
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> {
+                    // Cuando la Activity vuelve al primer plano
+                    Log.d("NavigationWrapper", "Lifecycle.Event.ON_START: Iniciando/Reanudando audio.")
+                    audioViewModel.startBackgroundMusic() // startBackgroundMusic maneja iniciar o reanudar
+                }
+                Lifecycle.Event.ON_STOP -> {
+                    // Cuando la Activity va a segundo plano
+                    Log.d("NavigationWrapper", "Lifecycle.Event.ON_STOP: Pausando audio.")
+                    audioViewModel.pauseBackgroundMusic() // Pausa la música
+                }
+                // Puedes añadir otros eventos si necesitas (ej: ON_PAUSE, ON_RESUME, ON_CREATE, ON_DESTROY)
+                else -> {
+                    // Log.d("NavigationWrapper", "Lifecycle Event: $event") // Opcional: loguear otros eventos
+                }
             }
-
-            composable<Entry>{
-                EntryScreen({navController.navigate(Main)})
-            }
-
-            composable<Upgrades>{
-                UpgradesScreen()
-            }
-
-
-
-
         }
 
+        // Añade el observador al ciclo de vida del propietario
+        lifecycleOwner.lifecycle.addObserver(observer)
 
-
+        // El bloque onDispose se ejecuta cuando el Composable sale de composición
+        onDispose {
+            Log.d("NavigationWrapper", "DisposableEffect: Limpiando observador y deteniendo audio.")
+            // Remueve el observador para evitar fugas de memoria
+            lifecycleOwner.lifecycle.removeObserver(observer)
+            // Detiene y libera completamente el reproductor cuando NavigationWrapper es destruido
+            audioViewModel.stopBackgroundMusic() // stopBackgroundMusic ahora solo detiene, onCleared libera
+        }
     }
 
 
+    Scaffold(bottomBar =  {
+        // Controla si la BottomBar se muestra o no
+        if (showBottomBar) {
+            BottomBarNav(navController)
+        }
+    }){  innerPadding -> // innerPadding no se usa en este Scaffold básico, pero se mantiene por si acaso
 
+        NavHost(navController = navController, startDestination = Entry){ // Asegúrate de que Entry es la ruta correcta de inicio
+            composable<Main>{ // Usa rutas seguras si las tienes definidas
+                showBottomBar  = true // Muestra la BottomBar en la pantalla Main
+                MainScreen(audioViewModel = audioViewModel) // Tu Composable de la pantalla principal
+            }
+
+            composable<Entry>{ // Usa rutas seguras si las tienes definidas
+                showBottomBar = false // Oculta la BottomBar en la pantalla de entrada
+                EntryScreen({navController.navigate(Main)}) // Tu Composable de la pantalla de entrada
+            }
+
+            composable<Upgrades>{ // Usa rutas seguras si las tienes definidas
+                showBottomBar = true // Muestra la BottomBar en la pantalla de mejoras
+                UpgradesScreen() // Tu Composable de la pantalla de mejoras
+            }
+
+            // Añade composables para otras pantallas aquí
+            // composable<OtraPantalla> { ... }
+        }
+    }
 }
 
+// Función de extensión para obtener la ruta segura (si usas sealed classes/objects para rutas)
+// Si usas rutas string simples ("main", "entry"), puedes eliminar esta función.
+// fun Any.toRoute(): String = this::class.qualifiedName ?: error("Unnamed route")
 
-fun Any.toRoute(): String = this::class.qualifiedName ?: error("Unnamed route")
 
 @Composable
 fun BottomBarNav(navController: NavHostController) {
 
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-
-
+    // Obtener la ruta actual para resaltar el ítem seleccionado (opcional)
+    // val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
 
     NavigationBar(
         windowInsets = NavigationBarDefaults.windowInsets,
         modifier = Modifier
-            .height(120.dp)
+            .height(120.dp) // Ajusta la altura según necesites
             .drawBehind {
                 // Dibujamos el fondo con un gradiente
                 drawRect(
                     brush = Brush.verticalGradient(
                         colors = listOf(Color.Transparent, Color.Black),
-                        startY = -30f,
+                        startY = -30f, // Ajusta startY y endY para controlar el gradiente
                         endY = size.height
                     ),
                     topLeft = Offset(0f, -30f)
                 )
-            }
-            ,
-        containerColor = Color.White
+            },
+        containerColor = Color.White // Color del contenedor (puede ser transparente si la imagen cubre todo)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // Imagen de fondo
+            // Imagen de fondo de la BottomBar
             Image(
-                painter = painterResource(id = R.drawable.partedeabajo3),
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier
-                    .fillMaxSize()
-                    ,  // Ajusta la altura de la imagen para que no ocupe toda la altura
-                contentDescription = null
+                painter = painterResource(id = R.drawable.partedeabajo3), // Asegúrate de que el recurso existe
+                contentScale = ContentScale.FillBounds, // O FillWidth/FillHeight según cómo quieras que se ajuste
+                modifier = Modifier.fillMaxSize(),
+                contentDescription = null // Decorativa
             )
 
-            // Los ítems de navegación ahora están encima de la imagen
+            // Los ítems de navegación (Row con NavigationBarItems)
             Row(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .align(Alignment.Center)
-                    .padding(top = 25.dp)// Alineamos los íconos en el centro vertical
+                    .align(Alignment.Center) // Centra la fila verticalmente
+                    .padding(top = 25.dp), // Ajusta el padding superior para alinear los iconos
+                horizontalArrangement = Arrangement.SpaceAround // Distribuye los ítems uniformemente
             ) {
+                // Ítem de navegación para Main
                 NavigationBarItem(
-                    selected = false,
-
-                    onClick = { navController.navigate(Main) },
-                    icon = {
-                        Box(
-                            modifier = Modifier.fillMaxHeight(),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Bottom
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.cacaclick),
-                                    contentScale = ContentScale.FillHeight,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentDescription = null
-                                )
+                    // selected = currentRoute == Main.toRoute(), // Ejemplo si usas rutas seguras
+                    selected = navController.currentDestination?.route == Entry.toString(), // O compara con la ruta string si usas strings
+                    onClick = {
+                        // Navega a la pantalla principal.
+                        // Usa popUpTo para evitar acumular instancias de la pantalla de inicio en el back stack
+                        navController.navigate(Main) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true // Guarda el estado de la pantalla de inicio si vuelves a ella
                             }
+                            // Evita crear múltiples copias de la misma pantalla si ya estás en ella
+                            launchSingleTop = true
+                            // Restaura el estado si ya estaba en el back stack
+                            restoreState = true
                         }
-                    }
+                    },
+                    icon = {
+                        // Contenido del ícono (tu imagen)
+                        Image(
+                            painter = painterResource(id = R.drawable.cacaclick), // Asegúrate de que el recurso existe
+                            contentScale = ContentScale.FillHeight, // Ajusta según necesites
+                            modifier = Modifier.fillMaxHeight(0.8f), // Ajusta el tamaño del ícono
+                            contentDescription = "Main Screen"
+                        )
+                    },
+                    label = { /* Puedes añadir texto aquí si quieres */ },
+                    alwaysShowLabel = false // Oculta el label si no está seleccionado
+                )
+
+                // Ítem de navegación para Upgrades
+                NavigationBarItem(
+                    // selected = currentRoute == Upgrades.toRoute(), // Ejemplo si usas rutas seguras
+                    selected = navController.currentDestination?.route == Upgrades.toString(), // O compara con la ruta string si usas strings
+                    onClick = {
+                        navController.navigate(Upgrades) {
+                            popUpTo(navController.graph.startDestinationId) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    icon = {
+                        // Contenido del ícono (tu imagen)
+                        Image(
+                            painter = painterResource(id = R.drawable.flechaicono), // Asegúrate de que el recurso existe
+                            contentScale = ContentScale.FillHeight,
+                            modifier = Modifier.fillMaxHeight(0.8f),
+                            contentDescription = "Upgrades Screen"
+                        )
+                    },
+                    label = { /* Puedes añadir texto aquí si quieres */ },
+                    alwaysShowLabel = false
+                )
+
+                // Otros ítems de navegación (ajusta según tus rutas y iconos)
+                NavigationBarItem(
+                    selected = false, // Ajusta la selección según la ruta actual
+                    onClick = { /* TODO: Navegar a la pantalla 3 */ },
+                    icon = {
+                        Image(
+                            painter = painterResource(id = R.drawable.rocaicon), // Asegúrate de que el recurso existe
+                            contentScale = ContentScale.FillHeight,
+                            modifier = Modifier.fillMaxHeight(0.8f),
+                            contentDescription = "Screen 3"
+                        )
+                    },
+                    label = { /* Puedes añadir texto aquí si quieres */ },
+                    alwaysShowLabel = false
                 )
 
                 NavigationBarItem(
-                    selected = false,
-                    onClick = { navController.navigate(Upgrades) },
+                    selected = false, // Ajusta la selección según la ruta actual
+                    onClick = { /* TODO: Navegar a la pantalla 4 */ },
                     icon = {
-                        Box(
+                        Image(
+                            painter = painterResource(id = R.drawable.dungeonicon), // Asegúrate de que el recurso existe
+                            contentScale = ContentScale.FillHeight,
                             modifier = Modifier.fillMaxHeight(0.8f),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Bottom
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.flechaicono),
-                                    contentScale = ContentScale.FillHeight,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentDescription = null
-                                )
-                            }
-                        }
+                            contentDescription = "Screen 4"
+                        )
                     },
-                    label = {
-
-                    }
-                )
-
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /*TODO*/ },
-                    icon = {
-                        Box(
-                            modifier = Modifier.fillMaxHeight(0.8f),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Bottom
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.rocaicon),
-                                    contentScale = ContentScale.FillHeight,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    },
-                    label = {
-
-                    }
-                )
-
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /*TODO*/ },
-                    icon = {
-                        Box(
-                            modifier = Modifier.fillMaxHeight(0.8f),
-                            contentAlignment = Alignment.BottomCenter
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.Bottom
-                            ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.dungeonicon),
-                                    contentScale = ContentScale.FillHeight,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    },
-                    label = {
-
-                    }
+                    label = { /* Puedes añadir texto aquí si quieres */ },
+                    alwaysShowLabel = false
                 )
             }
         }
     }
-
 }
+
 

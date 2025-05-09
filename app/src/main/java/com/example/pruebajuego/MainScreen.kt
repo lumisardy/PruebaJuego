@@ -77,7 +77,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun MainScreen() {
+fun MainScreen(audioViewModel: AudioViewModel) {
 
 
     val context = LocalContext.current
@@ -86,7 +86,7 @@ fun MainScreen() {
     val poopViewModel: PoopViewModel = remember { PoopViewModel(context) }
     val soundManager = remember { SoundManager(context) }
 
-    val audioViewModel: AudioViewModel = viewModel()
+
 
     // *** Asegúrate de liberar los recursos del SoundManager al salir del Composable ***
     DisposableEffect(Unit) { // Importa DisposableEffect
@@ -103,9 +103,7 @@ fun MainScreen() {
     val CacasTotales = poopData.value.cacasTotales
     val CatidadSumar = poopData.value.cantidadSumar
     val CantidadTotalCacas = poopData.value.cantidadCacaTotales
-    LaunchedEffect(Unit) { // Unit significa que solo se ejecuta la primera vez
-        audioViewModel.startBackgroundMusic(context)
-    }
+
 
     val PrecioYourBath = poopData.value.precioYourBath
     val PrecioSumClick = poopData.value.precioSumClick
@@ -1856,6 +1854,7 @@ fun MainScreen() {
                                     value = musicVolume,
                                     onValueChange = {
                                         // *** Llamar a la función del ViewModel para cambiar el volumen ***
+
                                         audioViewModel.setMusicVolume(it)
                                     },
                                     valueRange = 0f..1f,
@@ -1962,18 +1961,18 @@ fun MainScreen() {
 
 
                         Box(
-                            modifier = Modifier.fillMaxSize().padding(bottom = 120.dp),
+                            modifier = Modifier.fillMaxSize(0.68f),
                             contentAlignment = Alignment.BottomCenter
                         ) {
 
-                            Box(contentAlignment = Alignment.Center) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.marcopiedraboton), // Reemplaza R.drawable.cartel con tu recurso de imagen
-                                    contentScale = ContentScale.FillBounds,
-                                    contentDescription = "Cerrar Ajustes",
+
+                                Text(
+                                    "${formatPoops(diamantesAobtener.toInt())}\uD83D\uDC8E",
+                                    fontFamily = RetroFont,
+                                    color = Color.White,
+                                    fontSize = 22.sp,
                                     modifier = Modifier
-                                        .fillMaxWidth(0.6f)
-                                        .fillMaxHeight(0.11f)
+
                                         .clickable {
 
 
@@ -1983,17 +1982,11 @@ fun MainScreen() {
                                                 showSettingsDialog = false
                                             }
 
-                                        })
-
-                                Text(
-                                    "${formatPoops(diamantesAobtener.toInt())}\uD83D\uDC8E",
-                                    fontFamily = RetroFont,
-                                    color = Color.White,
-                                    fontSize = 22.sp
+                                        }
                                 )
 
 
-                            }
+
 
                         }
 
@@ -2006,7 +1999,6 @@ fun MainScreen() {
         }
     }
 }
-
 
     fun formatPoops(cacasTotales: Int): String {
         return when {
