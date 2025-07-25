@@ -69,8 +69,8 @@ fun CacaImage(
                 interactionSource = null,
                 indication = null
             ) {
-                soundManager.playPedoSound() // 👉 aquí reproducimos el sonido
-                onClickAction()               // 👉 y luego lo que tú quieras que pase
+                soundManager.playPedoSound()
+                onClickAction()
             }
     )
 }
